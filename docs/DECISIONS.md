@@ -9,9 +9,9 @@ Format: number, date, decision, why, evidence, who decided.
   repo created with `gh repo create amendolajine/drops --public`; Pages enabled with `build_type=workflow`.
 - Who: Antonio approved public repo.
 
-## D002 - 2026-10-14 - Separate from work project
+## D002 - 2026-10-14 - Separate from any work project
 - Why: Antonio wants a personal test of the potential first.
-- Evidence: separate folder `~/Documents/drops`, separate repo, no work project references.
+- Evidence: separate folder `~/Documents/drops`, separate repo, no work references.
 - Who: Antonio.
 
 ## D003 - 2026-10-14 - Commit identity is the GitHub noreply address
