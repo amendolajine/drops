@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>drops. sim debug view</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; background: #12141c; color: #d7dbea; font: 13px/1.4 ui-monospace, Menlo, monospace; }
+  main { display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; align-items: flex-start; }
+  #stage { position: relative; }
+  canvas { display: block; image-rendering: pixelated; background: #2b3140; cursor: crosshair; max-width: calc(100vw - 32px); }
+  #hud { margin-top: 8px; min-height: 2.8em; }
+  #hud b { color: #f3a833; }
+  #overlay { display: none; white-space: pre; background: #0b0d13; border: 1px solid #2f3446; padding: 8px 10px; max-height: 80vh; overflow: auto; min-width: 360px; }
+  #overlay.on { display: block; }
+  .keys { opacity: .6; }
+</style>
+</head>
+<body>
+<main>
+  <div id="stage">
+    <canvas id="glass" width="480" height="270" aria-label="Side window glass with raindrops"></canvas>
+    <div id="hud" aria-live="polite"></div>
+    <div class="keys">click a numbered drop to pick it - click the glass to knock - R restart - N new seed - D debug overlay</div>
+  </div>
+  <pre id="overlay"></pre>
+</main>
+<script type="module" src="/src/debug/main.ts"></script>
+</body>
+</html>
