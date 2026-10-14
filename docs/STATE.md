@@ -1,35 +1,66 @@
 # State
 
-Last updated: 2026-10-14 (evening). Read this first. Labels: VERIFIED (with proof), ASSUMED, TODO.
+Last updated: 2026-10-14 (night), branch `sim-core`. Read this first. Labels: VERIFIED (with proof), ASSUMED, TODO.
 
 ## Where we are
-Step 1 (production map) delivered. Waiting for Antonio at the step 1 checkpoint. Sim core work can start meanwhile.
+Step 1 delivered, waiting for Antonio at the step 1 checkpoint. Step 3 days 1-3 (sim core) built on branch
+`sim-core`, not merged. Nothing new is published: Pages still deploys only `site/` from `main`.
 
 ## Done
-- VERIFIED Public repo https://github.com/amendolajine/drops, branch `main`.
-- VERIFIED Pages publishes only `site/` (D007). Home page live; /drops/the project rules file returns 404. Deploy run 38605895549.
-- VERIFIED Production map v1.1 and 7 research reports in `~/Documents/drops/private/01_mappa-del-gioco/`
-  (workflow wf_eebde21b-bc3: 14 agents, 0 errors; 114 critiques logged in map section 15).
-- VERIFIED Map states English for all player-facing text (map header rule 1).
-- VERIFIED Antonio's 4 reference links reviewed in Chrome; notes in `01_mappa-del-gioco/drops_01_note-sui-riferimenti-di-antonio.md`.
+- VERIFIED Public repo https://github.com/amendolajine/drops, branch `main`; Pages publishes only `site/` (D007).
+- VERIFIED Production map v1.1 and 7 research reports in `~/Documents/drops/private/01_mappa-del-gioco/`.
+- VERIFIED Repo scaffold on `sim-core` (D010): Vite 8.3.3, TypeScript 7.0.2, three 0.186.1 (installed, unused),
+  Vitest 5.0.3, Biome 2.5.15, Playwright 1.63.0, size-limit 14.1.0. Scripts: dev, build, test, test:browsers, lint,
+  typecheck, sim, golden:update, size, check. `.github/workflows/ci.yml` runs lint, typecheck, tests, build, size
+  and the cross-browser golden test on push and PR; it never deploys. `pages.yml` unchanged.
+- VERIFIED Deterministic sim core in `src/sim` (pure API `createRace`, `step`, `snapshot`, `hashState`): glass
+  generation, drop physics, car speed, event schedule, knock, rival, director. Rules enforced by Biome + check-sim (D011).
+  Proof: `npm run check` green; Vitest 11 files, 72 tests passed (2026-10-14).
+- VERIFIED Golden test: 20 recorded races identical in Node, Chromium and WebKit (Playwright, 2026-10-14).
+  Firefox: TODO, see "In progress".
+- VERIFIED Bots and metrics: `npm run sim -- --races 1000 --seed 1` (JOURNAL 2026-10-14). Output in
+  `~/Documents/drops/private/03_prototipo-corsa/drops_03_metriche-nucleo.json`.
+- VERIFIED Debug page `npm run dev` -> `?seed=`, `?debug=1`, `window.__drops` (Playwright test in Chromium and WebKit;
+  screenshot `03_prototipo-corsa/drops_03_vista-debug-chromium.png`).
+
+## Measures today (1000 glasses, raw generator, no glass bank yet)
+| Measure (map 1.2) | Today | Target |
+|---|---|---|
+| Picked drops finish within 2 s | 12.1% | >= 25% |
+| Lead swap after half | 12.8% | >= 35% |
+| Median arrival gap | 5.45 s | <= 4 s |
+| Knock value (best reader) | +1.6 pp | +5 to +10 pp |
+| Races wanting another knock | 0.9% | >= 25% |
+| Pick value (best vs random) | +26.9 pp | >= +15 pp |
+| Always-biggest between random and best | yes (44.9% vs 43.0% / 69.9%) | yes, about halfway |
+| Median race | 34.1 s | 30-40 s |
+| Still racing at 60 s | 0% | < 2% |
+| Gulp | 8.8% | 3-6% |
+| Best reader vs rival | 71.5% | 55-60% (attentive person) |
 
 ## In progress
-- Nothing running.
+- Branch `sim-core` pushed for CI; Firefox golden result comes from the CI job `golden-browsers` (local Firefox
+  cannot start inside this machine's command sandbox).
 
 ## Next
-1. Antonio: approve map, answer questions 1-9 (map section 13) or accept recommendations, yes/no on history rewrite, licence veto.
-2. Build the deterministic sim core + repo scaffold (map 9.2, 9.3; step 3 days 1-3).
-3. Step 2 moodboard driven by the real sim, in `~/Documents/drops/private/02_moodboard/`.
+1. Antonio: step 1 checkpoint (map approval, questions 1-9, history rewrite yes/no, licence).
+2. Tension and knock value: the glass bank (map 3.1, `tools/bank/`) selecting glasses on pair closeness; more
+   creatures in the drops' path or a stronger knock; profile pass (the "monster" wins 34% of its glass, favourites 9%).
+3. Gulp 8.8% -> 3-6%: spacing, merge reach between racers, or bank criteria.
+4. Step 2 moodboard driven by this sim (clips from seeds).
+5. Merge `sim-core` into `main` only after Antonio approves step 2 (Pages keeps deploying `site/` meanwhile).
 
 ## Open questions for Antonio
-- Questions 1-9 of map section 13 (rival, defeat tone, window side, era, how Italian, road, drop names, parents, voice).
-- History rewrite yes/no (removes old commits that contain a work name).
-- Licence: MIT for code, all rights reserved for art and music (team proposal) or Creative Commons.
+- Questions 1-9 of map section 13; history rewrite yes/no; licence (MIT for code, all rights reserved for art and music,
+  or Creative Commons). package.json has no licence field until then.
+- `lightningcss` (MPL-2.0) comes with Vite as a build tool, never shipped in the game: ok? (docs/CREDITS.md)
+- The rival's habits are tuned against a near-oracle bot: final balance needs the step 3 test with people.
 
 ## Known unverified facts
-- See map section 14.4.
+- See map section 14.4. ASSUMED: Firefox golden hashes match (pending CI).
 
 ## Progress folder layout
 `~/Documents/drops/private/`
 - `01_mappa-del-gioco/` production map + `ricerca/` reports + Antonio's reference notes
 - `02_moodboard/` (next)
+- `03_prototipo-corsa/` sim core metrics (`drops_03_metriche-nucleo.json`) and the debug view screenshot
