@@ -98,7 +98,13 @@ export function createRace(seed: string | number, options: RaceOptions = {}): Ra
   const lp = { ...LIGHTS[light] };
   const build = buildGlass(p, streams.glass, streams.candidates, streams.ambient);
   build.glass.wetDecay = halfLifeFactor(0.5, p.WET_HALF_LIFE);
-  const schedule = buildSchedule(p, lp, streams.events);
+  const schedule = buildSchedule(
+    p,
+    lp,
+    streams.events,
+    build.cands.map((c) => c.x),
+    build.cands.map((c) => c.y),
+  );
   const car = initCar(p, streams.car);
   const gridW = round(p.W / 8) + 3;
   const gridH = round(p.H / 8) + 3;

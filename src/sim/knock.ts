@@ -1,7 +1,8 @@
 // The knock on the glass (MAP 3.4): one lever with two uses that share the same 3 knocks.
 // Use 1, scare: the nearest landed creature within 15 mm rolls to leave (fly 58%, leaf 50%),
 // +20 points per failed knock on the same creature, the third knock on it always works (pity rule).
-// Use 2, jolt: only the nearest stuck drop within 10 mm gets its pinning halved for 0.25 s.
+// Use 2, jolt: only the nearest stuck drop within 10 mm gets its pinning halved until it has moved one diameter,
+// at most 1 s (D026; MAP 3.2 says 0.25 s).
 // Every knock is rounded to 0.5 mm before it is applied, live or in a replay (MAP 9.3 rule 6).
 // Each scare roll is a counter hash of (creature, side, that side's attempt number on that creature), so a
 // knock by one side never shifts the dice of the other side (determinism review, D021).
@@ -88,6 +89,7 @@ export function applyKnock(s: RaceState, who: number, xIn: number, yIn: number):
   }
   if (pick >= 0) {
     d.jolt[pick] = round(p.KNOCK_JOLT_S * p.TICK_HZ);
+    d.joltMm[pick] = p.KNOCK_JOLT_MOVE * d.a[pick];
     logEvent(s.log, s.tick, L.JOLT, who, d.id[pick], d.cand[pick]);
   }
   return true;

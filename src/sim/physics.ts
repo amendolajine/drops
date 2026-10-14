@@ -235,6 +235,11 @@ export function stepDrops(s: RaceState): void {
     const my = ny - y;
     d.vx[i] = mx / dt;
     d.vy[i] = my / dt;
+    if (d.jolt[i] > 0) {
+      // the knock shook it off its catch once it has moved one diameter (D026)
+      d.joltMm[i] -= sqrt(mx * mx + my * my);
+      if (d.joltMm[i] <= 0) d.jolt[i] = 0;
+    }
     d.x[i] = nx;
     d.y[i] = ny;
     // 7. wet track (R4 1.7), written at the drop's tail: the advancing edge always meets the glass ahead,

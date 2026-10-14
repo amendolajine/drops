@@ -32,14 +32,25 @@ export interface Schedule {
 }
 
 /**
- * Where creatures land: uniform in the band where the pack of drops is expected at that time, from the
- * start box and the typical race speed only (never from the picks or the live race). MAP 3.3 allows
- * "uniform on the glass or weighted by drop density"; this is the density of the race at that moment.
+ * Where a creature lands (D026): ahead of where one of the six candidates should be at time t, on its
+ * expected path. Which candidate comes from the events stream. Built at creation from the glass only: the
+ * picks do not exist yet, so the event never targets a picked drop (MAP 3.3).
  */
-function packX(p: Params, t: number, u: number): number {
-  const centre = (p.CAND_X_MIN + p.CAND_X_MAX) / 2 + p.PACK_SPEED * t;
-  const x = centre + (u < 0 ? u * p.PACK_BEHIND : u * p.PACK_AHEAD);
-  return x < 40 ? 40 : x > p.FINISH_X - 15 ? p.FINISH_X - 15 : x;
+function pathSpot(
+  p: Params,
+  t: number,
+  ev: Stream,
+  cx: ArrayLike<number>,
+  cy: ArrayLike<number>,
+): [number, number] {
+  const k = int(ev, cx.length);
+  const lead = range(ev, p.PACK_LEAD_MIN, p.PACK_LEAD_MAX);
+  const side = range(ev, -p.PACK_SIDE, p.PACK_SIDE);
+  let x = cx[k] + p.PACK_SPEED * (t > p.PACK_DELAY ? t - p.PACK_DELAY : 0) + lead;
+  x = x < 40 ? 40 : x > p.FINISH_X - 15 ? p.FINISH_X - 15 : x;
+  let y = cy[k] + p.PACK_SLOPE * (x - cx[k]) + side;
+  y = y < p.PACK_Y_MIN ? p.PACK_Y_MIN : y > p.PACK_Y_MAX ? p.PACK_Y_MAX : y;
+  return [x, y];
 }
 
 function sec(p: Params, s: number): number {
@@ -67,8 +78,15 @@ function newCreature(kind: number, event: number, x: number, y: number, r: numbe
   };
 }
 
-/** Build the whole schedule from the events stream. Inputs: params and light only (never picks). */
-export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule {
+/** Build the whole schedule from the events stream. Inputs: params, light and the candidates' start spots
+ *  (part of the glass); never the picks. */
+export function buildSchedule(
+  p: Params,
+  lp: LightProfile,
+  ev: Stream,
+  candX: ArrayLike<number>,
+  candY: ArrayLike<number>,
+): Schedule {
   // 1. which events happen (independent chances, MAP 3.3 frequencies)
   const wanted: EventType[] = [];
   if (chance(ev, lp.bump)) wanted.push('bump');
@@ -159,8 +177,7 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
       if (chance(ev, lp.flyGivenBrake) && latest >= earliest) {
         const land = range(ev, earliest, latest);
         const life = range(ev, p.FLY_LIFE_MIN, p.FLY_LIFE_MAX);
-        const fx = packX(p, land, range(ev, -1, 1));
-        const fy = range(ev, p.PACK_Y_MIN, p.PACK_Y_MAX);
+        const [fx, fy] = pathSpot(p, land, ev, candX, candY);
         const cr = newCreature(CR_FLY, events.length, fx, fy, p.FLY_R);
         cr.gripKmh = range(ev, p.FLY_GRIP_MIN, p.FLY_GRIP_MAX);
         const fe: SimEvent = {
@@ -179,8 +196,7 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
       }
     } else if (type === 'leaf') {
       const hold = range(ev, p.LEAF_HOLD_MIN, p.LEAF_HOLD_MAX);
-      e.x = packX(p, t0, range(ev, -1, 1));
-      e.y = range(ev, p.PACK_Y_MIN, p.PACK_Y_MAX);
+      [e.x, e.y] = pathSpot(p, t0, ev, candX, candY);
       const cr = newCreature(CR_LEAF, events.length, e.x, e.y, range(ev, p.LEAF_R_MIN, p.LEAF_R_MAX));
       cr.outcome = chance(ev, 0.5) ? 0 : 1;
       e.endTick = sec(p, t0 + hold);

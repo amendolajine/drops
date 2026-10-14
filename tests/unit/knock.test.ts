@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { applyKnock, quantizeKnock } from '../../src/sim/knock.ts';
+import { stepDrops } from '../../src/sim/physics.ts';
 import { createRace, pick, step } from '../../src/sim/race.ts';
 import {
   CR_FLY,
@@ -12,8 +13,8 @@ import {
 } from '../../src/sim/state.ts';
 import { addDrop, bareRace } from './helpers.ts';
 
-function racing(): RaceState {
-  const s = bareRace();
+function racing(params: Parameters<typeof bareRace>[0] = {}): RaceState {
+  const s = bareRace(params);
   s.mode = 'race';
   s.phase = 1;
   s.greenTick = s.tick;
@@ -75,15 +76,43 @@ describe('the knock (MAP 3.4)', () => {
     const i = (s.log.head - 1 + s.log.cap) % s.log.cap;
     expect([s.log.b[i], s.log.c[i]]).toEqual([33.5, 44.5]);
   });
-  it('jolt: only the nearest stuck drop within 10 mm gets its pinning halved for 0.25 s', () => {
+  it('jolt: only the nearest stuck drop within 10 mm, until it has moved one diameter (at most 1 s)', () => {
     const s = racing();
     const near = addDrop(s, 105, 50, 6);
     const other = addDrop(s, 108, 50, 6);
     const far = addDrop(s, 125, 50, 6);
     applyKnock(s, PLAYER, 104, 50);
-    expect(s.drops.jolt[near]).toBe(15);
+    expect(s.drops.jolt[near]).toBe(60);
+    expect(s.drops.joltMm[near]).toBeCloseTo(2 * s.drops.a[near], 12);
     expect(s.drops.jolt[other]).toBe(0);
     expect(s.drops.jolt[far]).toBe(0);
+  });
+  it('a jolt frees a drop caught on a speck at cruise; without it the drop stays', () => {
+    const trial = (knock: boolean) => {
+      const s = racing({ ROAD_RATE: 0 }); // no road vibration: only the knock can free it
+      // a dirt band 3 mm wide right in front of the drop
+      for (let y = 0; y < s.glass.ph; y++)
+        for (let x = 102; x < 105; x++) s.glass.pin[y * s.glass.pw + x] = 2.4;
+      const i = addDrop(s, 100, 50, 6);
+      s.car.kmh = 65;
+      const run = (ticks: number) => {
+        for (let t = 0; t < ticks; t++) {
+          s.tick++;
+          stepDrops(s);
+        }
+      };
+      run(60); // it slides to the band and its front edge catches there
+      const caught = s.drops.x[i];
+      expect(s.drops.moving[i]).toBe(0);
+      if (knock) {
+        s.tick += 60; // past the knock pause
+        applyKnock(s, PLAYER, 100, 50);
+      }
+      run(120);
+      return s.drops.x[i] - caught;
+    };
+    expect(trial(false)).toBe(0);
+    expect(trial(true)).toBeGreaterThan(2);
   });
   it('scare: the pity rule makes the third knock on the same creature always work', () => {
     let firstTry = 0;

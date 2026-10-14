@@ -6,6 +6,10 @@ import { createRace, pick, seedKeys, step } from '../../src/sim/race.ts';
 import { makeStream } from '../../src/sim/rng.ts';
 import { CR_LANDED, PHASE_DONE } from '../../src/sim/state.ts';
 
+// six start spots, as a glass would have them
+const CX = [15, 25, 35, 45, 55, 30];
+const CY = [15, 45, 25, 50, 20, 35];
+
 describe('event schedule (MAP 3.3)', () => {
   it('is decided at creation, before and regardless of the picks', () => {
     for (let i = 0; i < 30; i++) {
@@ -25,7 +29,7 @@ describe('event schedule (MAP 3.3)', () => {
       let total = 0;
       for (let i = 0; i < N; i++) {
         const p = { ...DEFAULT_PARAMS };
-        const sc = buildSchedule(p, LIGHTS[light], makeStream(seedKeys(`sched-${i}`).dyn, 'events'));
+        const sc = buildSchedule(p, LIGHTS[light], makeStream(seedKeys(`sched-${i}`).dyn, 'events'), CX, CY);
         // a fly belongs to its braking's slot (D024); every other event is a slot of its own
         const slots = sc.events.filter((e) => e.type !== 'fly');
         expect(slots.length).toBeGreaterThanOrEqual(1);

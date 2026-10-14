@@ -32,6 +32,7 @@ export function spawnDrop(s: RaceState, x: number, y: number, v: number, kind: n
   d.cand[i] = -1;
   d.burst[i] = 0;
   d.jolt[i] = 0;
+  d.joltMm[i] = 0;
   d.stuck[i] = 0;
   d.held[i] = -1;
   d.contact[i] = 0;

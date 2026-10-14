@@ -232,13 +232,19 @@ export const DEFAULT_PARAMS = deepFreeze({
   BRAKE_DOWN_S: 1,
   BRAKE_UP_S: 2,
 
-  // where creatures land: the band where the pack is expected (MAP 3.3 "pesato sulla densita delle gocce")
-  /** Typical candidate speed, mm/s. TUNING: measured mean speed of finishing candidates (about 5-5.5 mm/s). */
-  PACK_SPEED: 5.5,
-  /** The band reaches this far behind / ahead of the expected pack centre, mm. CHOICE. */
-  PACK_BEHIND: 25,
-  PACK_AHEAD: 45,
-  /** Height band of the pack, mm. CHOICE (candidates start at y 10-52 and slide down). */
+  // where creatures land (MAP 3.3 "uniforme sul vetro o pesato sulla densita delle gocce"; D026): on the expected
+  // path of one of the six candidates, drawn by the events stream. The candidates' start spots are part of the glass,
+  // known at creation; the picks are not, so a creature is just as likely on any drop's path.
+  /** A candidate is expected PACK_SPEED x (t - PACK_DELAY) mm from its start at race time t, sliding PACK_SLOPE mm
+   *  down per mm back. TUNING: medians of 80 rollouts, 2026-10-14 (31 mm at 10 s, 71 at 20 s, slope 0.25). */
+  PACK_SPEED: 4.4,
+  PACK_DELAY: 3,
+  PACK_SLOPE: 0.25,
+  /** The creature lands this far ahead of where that drop should be, mm, and up to PACK_SIDE across. CHOICE. */
+  PACK_LEAD_MIN: 4,
+  PACK_LEAD_MAX: 18,
+  PACK_SIDE: 4,
+  /** Height band where creatures land, mm. CHOICE (candidates start at y 10-52 and slide down). */
   PACK_Y_MIN: 15,
   PACK_Y_MAX: 90,
 
@@ -292,10 +298,14 @@ export const DEFAULT_PARAMS = deepFreeze({
   KNOCK_COOLDOWN_S: 1,
   /** Scare: nearest creature within 15 mm. MAP 3.4. */
   KNOCK_SCARE_R: 15,
-  /** Jolt: nearest stuck drop within 10 mm, pinning x0.5 for 0.25 s. MAP 3.4, 3.2. */
+  /** Jolt: nearest stuck drop within 10 mm, pinning x0.5. MAP 3.4, 3.2. */
   KNOCK_JOLT_R: 10,
   KNOCK_JOLT_MUL: 0.5,
-  KNOCK_JOLT_S: 0.25,
+  /** ... until the drop has moved KNOCK_JOLT_MOVE radii (one diameter: off the speck that caught it), at most
+   *  KNOCK_JOLT_S. MAP 3.2 says 0.25 s; TUNING (D026): 0.25 s moved a drop less than 1 mm, so a jolt rarely
+   *  freed it (metrics review). */
+  KNOCK_JOLT_S: 1,
+  KNOCK_JOLT_MOVE: 2,
   /** Scare chances. MAP 3.4 (fly 55-60% "to tune", leaf 50%). */
   SCARE_FLY: 0.58,
   SCARE_LEAF: 0.5,

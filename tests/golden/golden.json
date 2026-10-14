@@ -6,45 +6,45 @@
       "name": "golden-01",
       "checkpoints": [
         "e1f7d704",
-        "75b44372",
-        "a269514e",
-        "681875e1"
+        "9d7c4832",
+        "fdcb2b42",
+        "2d105de2"
       ],
-      "final": "03921f01",
+      "final": "1f5bcb12",
       "schedule": "629a6f2f",
       "winner": 1,
       "reason": 1,
-      "endTick": 2219,
+      "endTick": 2104,
       "picks": [
         0,
         1
       ],
       "knocksUsed": [
         0,
-        3
+        2
       ]
     },
     {
       "name": "golden-02",
       "checkpoints": [
-        "e4591b48",
-        "de300a1a",
-        "d827d7df",
-        "5931d187",
-        "1a2620a3"
+        "ab4a5ac3",
+        "8d0e9a62",
+        "8f512aad",
+        "44651875",
+        "808cc1ab"
       ],
-      "final": "25a56569",
-      "schedule": "cb20ba47",
+      "final": "7326ea6e",
+      "schedule": "0c2451ea",
       "winner": 1,
       "reason": 1,
-      "endTick": 2644,
+      "endTick": 2596,
       "picks": [
         1,
         2
       ],
       "knocksUsed": [
         2,
-        3
+        2
       ]
     },
     {
@@ -74,15 +74,15 @@
       "checkpoints": [
         "665a4c3c",
         "499d7b14",
-        "d0b78744",
-        "bcb2234c",
-        "3747153b"
+        "a5ecfa51",
+        "65ccb581",
+        "85a3c942"
       ],
-      "final": "635328cc",
+      "final": "e44ca516",
       "schedule": "0249dfa5",
       "winner": 1,
       "reason": 1,
-      "endTick": 2614,
+      "endTick": 2658,
       "picks": [
         4,
         3
@@ -116,13 +116,13 @@
     {
       "name": "golden-06",
       "checkpoints": [
-        "b02fc8a4",
-        "fc3f97fb",
-        "f606e18f",
-        "19a34b36"
+        "963a543c",
+        "1d516e5d",
+        "c0bd70f9",
+        "42ff6361"
       ],
-      "final": "2547ed54",
-      "schedule": "420fa91a",
+      "final": "dca78aaf",
+      "schedule": "ada929f0",
       "winner": 2,
       "reason": 1,
       "endTick": 2081,
@@ -138,18 +138,18 @@
     {
       "name": "golden-07",
       "checkpoints": [
-        "2e6435b1",
-        "bd406001",
-        "ee5e9e64",
-        "211b87dc",
-        "3a96859b",
-        "ebf7a1ac"
+        "1de43512",
+        "33e82ae8",
+        "4f37c91a",
+        "865fd10e",
+        "09072c15",
+        "429b6b9c"
       ],
-      "final": "10fcb49b",
-      "schedule": "1785037e",
+      "final": "fa86c049",
+      "schedule": "66dbf3b7",
       "winner": 2,
       "reason": 1,
-      "endTick": 3371,
+      "endTick": 3393,
       "picks": [
         0,
         1
@@ -162,17 +162,17 @@
     {
       "name": "golden-08",
       "checkpoints": [
-        "84308c0c",
-        "13998b32",
-        "19ed77a0",
-        "541ea8c6",
-        "89f31d4e"
+        "6f594ede",
+        "08e571b0",
+        "ca1962e8",
+        "ffbe6220",
+        "e5592ff9"
       ],
-      "final": "63d6908a",
-      "schedule": "41c21097",
+      "final": "c57b9109",
+      "schedule": "d3555d74",
       "winner": 1,
       "reason": 1,
-      "endTick": 2330,
+      "endTick": 2414,
       "picks": [
         1,
         2
@@ -212,39 +212,39 @@
       "checkpoints": [
         "1671b460",
         "2a6ca978",
-        "9eba6aca",
-        "29b91e4b",
-        "3ca34017"
+        "fc204ed7",
+        "c807ae71",
+        "977fcf35"
       ],
-      "final": "b1cf73f6",
+      "final": "5d69f93e",
       "schedule": "b656dd45",
       "winner": 2,
       "reason": 1,
-      "endTick": 2548,
+      "endTick": 2556,
       "picks": [
         3,
         5
       ],
       "knocksUsed": [
         2,
-        2
+        1
       ]
     },
     {
       "name": "golden-11",
       "checkpoints": [
-        "28ce0839",
-        "ce3fc30d",
-        "ef3d239c",
-        "1afb6b63",
-        "1758d6a1",
-        "918df071"
+        "7c202f25",
+        "f79c5ba7",
+        "124d8f8f",
+        "88ba10d4",
+        "5bb986d6",
+        "923b3934"
       ],
-      "final": "093fc249",
-      "schedule": "a5c19d1d",
+      "final": "a06d8a5f",
+      "schedule": "ddd514e2",
       "winner": 2,
       "reason": 1,
-      "endTick": 3427,
+      "endTick": 3423,
       "picks": [
         4,
         1
@@ -257,42 +257,40 @@
     {
       "name": "golden-12",
       "checkpoints": [
-        "cec2078e",
-        "d9805094",
-        "2f76c567",
-        "8cf58b29",
-        "91e60f0a",
-        "f200c85d"
+        "77a4fffa",
+        "7b01c526",
+        "0c6218aa",
+        "28bd1444",
+        "2a8c9d31"
       ],
-      "final": "61bdd8ee",
-      "schedule": "5141343d",
+      "final": "adcb76f7",
+      "schedule": "ff286457",
       "winner": 2,
-      "reason": 2,
-      "endTick": 3267,
+      "reason": 1,
+      "endTick": 2358,
       "picks": [
         5,
         0
       ],
       "knocksUsed": [
         3,
-        3
+        1
       ]
     },
     {
       "name": "golden-13",
       "checkpoints": [
-        "f7823bf6",
-        "fc358c78",
-        "f4abccb1",
-        "1b07934f",
-        "8d83db4f",
-        "35119a51"
+        "86398f55",
+        "67ab286d",
+        "3f151d97",
+        "0b6b1b4c",
+        "5cb054df"
       ],
-      "final": "a784b5af",
-      "schedule": "f183b43f",
+      "final": "b0fcacce",
+      "schedule": "94d5cce3",
       "winner": 1,
       "reason": 1,
-      "endTick": 3068,
+      "endTick": 2706,
       "picks": [
         0,
         1
@@ -305,18 +303,18 @@
     {
       "name": "golden-14",
       "checkpoints": [
-        "dc575728",
-        "5ba39951",
-        "e01b44c9",
-        "f97d72b6",
-        "4b0c8832",
-        "63ee7901"
+        "fb29ee04",
+        "97b5df69",
+        "f6bd2c25",
+        "34529a43",
+        "68cca9ff",
+        "8582c4e4"
       ],
-      "final": "0102738e",
-      "schedule": "5cb0d5a2",
+      "final": "8a54ddcb",
+      "schedule": "f2df3917",
       "winner": 2,
       "reason": 1,
-      "endTick": 3300,
+      "endTick": 3302,
       "picks": [
         1,
         0
@@ -331,12 +329,12 @@
       "checkpoints": [
         "c47c313f",
         "9cdbe571",
-        "0ca1b180",
-        "24a2e1b7",
-        "95c70d6f",
-        "988da521"
+        "efa517cb",
+        "1513592d",
+        "018898c4",
+        "65efe421"
       ],
-      "final": "cd7a1888",
+      "final": "a1268051",
       "schedule": "52fceab2",
       "winner": 2,
       "reason": 1,
@@ -354,15 +352,16 @@
       "name": "golden-16",
       "checkpoints": [
         "a3b6ad14",
-        "f03d0e72",
-        "eff77e59",
-        "87ff60a6"
+        "0d837777",
+        "94670c70",
+        "18c4a5d1",
+        "1c9e4f63"
       ],
-      "final": "7d11f5d1",
+      "final": "c6cf6e51",
       "schedule": "e9d6628f",
       "winner": 1,
       "reason": 1,
-      "endTick": 2025,
+      "endTick": 2813,
       "picks": [
         3,
         0
@@ -376,7 +375,7 @@
       "name": "golden-17",
       "checkpoints": [
         "644873e7",
-        "9d959dd6",
+        "3e5659fd",
         "c6a48233",
         "ea12fc8b",
         "daf08d32"
@@ -399,7 +398,7 @@
       "name": "golden-18",
       "checkpoints": [
         "72c53aa9",
-        "d19e0d38",
+        "acf7babd",
         "53c48e05",
         "15832ad2",
         "2737bf96",
@@ -422,17 +421,17 @@
     {
       "name": "golden-19",
       "checkpoints": [
-        "703afb74",
-        "64e43d4b",
-        "ebbf55bb",
-        "e1dba4e9",
-        "da697b04"
+        "efff5ab4",
+        "d10e220f",
+        "b95b70e9",
+        "74712c53",
+        "0b2d36dd"
       ],
-      "final": "61a151fe",
-      "schedule": "d54fce3c",
+      "final": "486cff8d",
+      "schedule": "075449b8",
       "winner": 2,
       "reason": 1,
-      "endTick": 2421,
+      "endTick": 2424,
       "picks": [
         0,
         1
@@ -445,15 +444,15 @@
     {
       "name": "golden-20",
       "checkpoints": [
-        "78802bde",
-        "6f9bf95a",
-        "1e735666",
-        "215e21a7",
-        "8ff508d4",
-        "2334c079"
+        "42d9bc81",
+        "57909f28",
+        "b4842929",
+        "09ea5224",
+        "65ca1a79",
+        "5c84b0fd"
       ],
-      "final": "42b1f5d8",
-      "schedule": "1d287a69",
+      "final": "f728b07a",
+      "schedule": "bd3d5e71",
       "winner": 1,
       "reason": 1,
       "endTick": 3135,

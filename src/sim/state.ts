@@ -140,6 +140,8 @@ export interface Drops {
   cand: Int8Array;
   burst: Int32Array;
   jolt: Int32Array;
+  /** a jolt lasts until the drop has moved this much more, mm (or its ticks run out) */
+  joltMm: Float64Array;
   stuck: Int32Array;
   held: Int8Array;
   contact: Uint8Array;
@@ -348,6 +350,7 @@ export function newDrops(cap: number): Drops {
     cand: new Int8Array(cap),
     burst: new Int32Array(cap),
     jolt: new Int32Array(cap),
+    joltMm: new Float64Array(cap),
     stuck: new Int32Array(cap),
     held: new Int8Array(cap),
     contact: new Uint8Array(cap),

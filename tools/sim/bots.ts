@@ -6,7 +6,7 @@
 import type { KnockInput } from '../../src/sim/race.ts';
 import { rivalScore } from '../../src/sim/rival.ts';
 import { makeStream, next, type Stream } from '../../src/sim/rng.ts';
-import { CAND_RACING, CR_LANDED, PLAYER, type RaceState, RIVAL } from '../../src/sim/state.ts';
+import { CAND_RACING, CR_FLY, CR_LANDED, PLAYER, type RaceState, RIVAL } from '../../src/sim/state.ts';
 
 export type PickerName = 'random' | 'biggest' | 'best';
 export type KnockPolicyName = 'none' | 'good';
@@ -71,11 +71,22 @@ export function botRng(seed: string, name: string): Stream {
   return makeStream(`bots|${seed}`, name);
 }
 
-/** "Good" knocking: scare a creature in front of or on top of your drop, jolt your drop when it is stuck. */
+/**
+ * "Good" knocking, what an attentive player does. A lower bound of what a person can get out of the knock:
+ * - scare a creature on my drop's path: along the way it is actually heading (its last moving direction),
+ *   up to 45 mm ahead, within its own width plus the creature's;
+ * - a leaf or paper surfing with my drop under it is carrying my drop toward the line: leave it alone;
+ *   one holding (or surfing with) the rival's drop is worth a knock; one holding mine before it decides is a
+ *   coin toss (surf or carry off), so knock it to be safe;
+ * - jolt my drop when it has been stuck for more than JOLT_AFTER while the car is going, and again if it is
+ *   still stuck a second later (it may need more than one knock to get off a speck).
+ */
 export class GoodKnocker {
   private noticed = new Map<number, number>();
-  private joltedAtStuck = -1;
+  private lastJoltAt = -1;
   private nextAllowed = 0;
+  private dirX = 0.96;
+  private dirY = 0.27;
   /** reaction time of an attentive player, ticks (0.4 s) */
   private readonly reactTicks: number;
   constructor(reactTicks = 24) {
@@ -87,43 +98,67 @@ export class GoodKnocker {
     const c = s.picks[PLAYER];
     if (c < 0 || s.cands.state[c] !== CAND_RACING || s.knocks.locked) return null;
     const rt = s.tick - s.greenTick;
-    if (rt < this.nextAllowed) return null;
     const slot = s.cands.slot[c];
     const d = s.drops;
     const x = d.x[slot];
     const y = d.y[slot];
-    // 1. a creature ahead of (or holding) my drop
+    const a = d.a[slot];
+    // remember where my drop is heading (what you see it do)
+    const sp = Math.hypot(d.vx[slot], d.vy[slot]);
+    if (sp > 0.5) {
+      this.dirX = d.vx[slot] / sp;
+      this.dirY = d.vy[slot] / sp;
+    }
+    if (rt < this.nextAllowed) return null;
+    const rivalC = s.picks[RIVAL];
+    const rivalSlot = rivalC >= 0 && s.cands.state[rivalC] === CAND_RACING ? s.cands.slot[rivalC] : -1;
+    // 1. creatures
     for (let ci = 0; ci < s.creatures.length; ci++) {
       const cr = s.creatures[ci];
       if (cr.state !== CR_LANDED) continue;
-      const dx = cr.x - x;
-      const dy = cr.y - y;
       const holdsMine = d.held[slot] === ci;
-      const ahead = dx >= -cr.r && dx <= 40 && Math.abs(dy) <= 10 + cr.r;
-      if (!holdsMine && !ahead) continue;
-      const seen = this.noticed.get(ci);
-      if (seen === undefined) {
-        this.noticed.set(ci, rt);
-        continue;
+      const holdsHis = rivalSlot >= 0 && d.held[rivalSlot] === ci;
+      if (cr.kind !== CR_FLY) {
+        if (holdsMine && cr.surfing) continue; // it is carrying my drop toward the line
+        if (holdsHis && !holdsMine) {
+          if (this.ready(ci, rt)) return this.knock(s, cr.x, cr.y, rt);
+          continue;
+        }
       }
-      if (rt - seen < this.reactTicks) continue;
-      return this.knock(s, cr.x, cr.y, rt);
+      let threat = holdsMine;
+      if (!threat) {
+        const dx = cr.x - x;
+        const dy = cr.y - y;
+        const along = dx * this.dirX + dy * this.dirY;
+        const across = Math.abs(-dx * this.dirY + dy * this.dirX);
+        threat = along >= -cr.r && along <= 45 && across <= cr.r + a + 1.5;
+      }
+      if (threat && this.ready(ci, rt)) return this.knock(s, cr.x, cr.y, rt);
     }
-    // 2. my drop is stuck: jolt it (once per stuck spell)
+    // 2. my drop is stuck while the car is going: jolt it (again a second later if it is still stuck)
     const stuck = d.stuck[slot];
-    if (stuck === 0) this.joltedAtStuck = -1;
-    // only when the car is going (scenery moving) and the other drops run: a stuck drop at a stop is normal
+    if (stuck === 0) this.lastJoltAt = -1;
     else if (
-      stuck > 36 &&
-      this.joltedAtStuck < 0 &&
+      stuck > JOLT_AFTER_TICKS &&
       d.held[slot] < 0 &&
       s.car.kmh >= 45 &&
-      rt > 6 * s.p.TICK_HZ
+      rt > 6 * s.p.TICK_HZ &&
+      (this.lastJoltAt < 0 || rt - this.lastJoltAt >= s.p.TICK_HZ)
     ) {
-      this.joltedAtStuck = stuck;
+      this.lastJoltAt = rt;
       return this.knock(s, x, y, rt);
     }
     return null;
+  }
+
+  /** Seen for at least the reaction time. */
+  private ready(ci: number, rt: number): boolean {
+    const seen = this.noticed.get(ci);
+    if (seen === undefined) {
+      this.noticed.set(ci, rt);
+      return false;
+    }
+    return rt - seen >= this.reactTicks;
   }
 
   private knock(s: RaceState, x: number, y: number, rt: number): KnockInput {
@@ -132,3 +167,6 @@ export class GoodKnocker {
     return { who: 'player', x, y };
   }
 }
+
+/** A stuck drop is jolted after this long (1.2 s): most stops end by themselves within a second. */
+const JOLT_AFTER_TICKS = 72;
