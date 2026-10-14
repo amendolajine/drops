@@ -15,11 +15,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # full history: the lock file's commit date and the sim version guard need it
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: private names, local paths, emails (map 9.5 point 3)
+        run: node scripts/check-private.ts
+        env:
+          DROPS_PRIVATE_TERMS: ${{ secrets.DROPS_PRIVATE_TERMS }}
+      - name: dependency age, whole lock file (map 9.1, D010)
+        run: node scripts/check-lock-age.ts
+      - name: npm audit (warning only)
+        run: npm audit --audit-level=low
+        continue-on-error: true
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test

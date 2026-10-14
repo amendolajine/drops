@@ -9,3 +9,7 @@ blob-report/
 playwright/.cache/
 *.log
 .vite/
+dist-golden/
+# private, never committed (map 9.5 point 1 and 3)
+.env*
+.private-terms

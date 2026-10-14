@@ -1,0 +1,4 @@
+#!/bin/sh
+# Map 9.5 point 3: block local paths, personal emails and private names in staged files.
+# Enable once per clone with: npm run hooks:install
+exec node scripts/check-private.ts --staged
