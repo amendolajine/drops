@@ -9,3 +9,8 @@ One entry per work block, newest last. What happened, with proof.
 - Started workflow wf_eebde21b-bc3 (7 research streams, synthesis, 5 adversarial critics, revision)
   to produce the production map in `drops/private/01_mappa-del-gioco/`.
 - Added the project rules file, docs/STATE.md, docs/DECISIONS.md, this journal.
+
+## 2026-10-14 - Antonio's references
+- VERIFIED all 4 reference links opened in Antonio's Chrome (Google blocked the in-app browser with a CAPTCHA).
+- Notes: drops/private/01_mappa-del-gioco/drops_01_note-sui-riferimenti-di-antonio.md
+- New rule in the project rules file: never skip a step; if a link fails, use Chrome.
