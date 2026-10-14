@@ -1,0 +1,8 @@
+[
+  {
+    "name": "debug page JavaScript (gzip, budget from map 9.4)",
+    "path": "dist/assets/*.js",
+    "gzip": true,
+    "limit": "260 kB"
+  }
+]

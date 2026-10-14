@@ -1,0 +1,98 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "includes": ["**", "!site", "!docs", "!**/package-lock.json", "!tests/golden/golden.json"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 110
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "semicolons": "always", "trailingCommas": "all" }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "suspicious": { "noConsole": { "level": "error", "options": { "allow": [] } } },
+      "style": { "noNonNullAssertion": "off", "noParameterAssign": "off" }
+    }
+  },
+  "plugins": [{ "path": "./biome-plugins/no-exponent.grit", "includes": ["**/src/sim/**"] }],
+  "overrides": [
+    {
+      "includes": ["src/sim/**/*.ts", "!src/sim/fmath.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "Math": "Determinism: use src/sim/fmath.ts instead of Math in the simulation.",
+                  "Date": "Determinism: the simulation never reads the clock.",
+                  "performance": "Determinism: the simulation never reads the clock.",
+                  "crypto": "Determinism: use the seeded streams in src/sim/rng.ts.",
+                  "globalThis": "The simulation has no access to the page or the runtime.",
+                  "self": "The simulation has no access to the page or the runtime.",
+                  "window": "The simulation has no access to the page.",
+                  "document": "The simulation has no access to the page.",
+                  "navigator": "The simulation has no access to the page.",
+                  "setTimeout": "Determinism: time in the simulation is the tick counter only.",
+                  "setInterval": "Determinism: time in the simulation is the tick counter only.",
+                  "requestAnimationFrame": "Determinism: time in the simulation is the tick counter only.",
+                  "queueMicrotask": "Determinism: the simulation is synchronous.",
+                  "process": "The simulation has no access to the runtime.",
+                  "Intl": "Determinism: locale formatting differs between machines."
+                }
+              }
+            },
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**", "!./*"],
+                    "message": "The simulation imports only its own files (./name.ts): no three.js, no DOM, nothing outside src/sim."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/sim/fmath.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "Date": "Determinism: the simulation never reads the clock.",
+                  "performance": "Determinism: the simulation never reads the clock.",
+                  "crypto": "Determinism: use the seeded streams in src/sim/rng.ts.",
+                  "globalThis": "The simulation has no access to the page or the runtime.",
+                  "window": "The simulation has no access to the page."
+                }
+              }
+            },
+            "noRestrictedImports": {
+              "level": "error",
+              "options": { "patterns": [{ "group": ["**"], "message": "fmath.ts imports nothing." }] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["tools/**", "scripts/**", "tests/**", "*.config.ts"],
+      "linter": { "rules": { "suspicious": { "noConsole": "off" } } }
+    }
+  ]
+}
