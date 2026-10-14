@@ -35,7 +35,7 @@ describe('glass generation (MAP 3.1)', () => {
   it('the pin field is positive, specks are counted, ambient drops are 120-150', () => {
     const s = createRace('glass-field');
     for (const m of s.glass.pin) expect(m).toBeGreaterThan(0);
-    expect(s.glass.specks.length / 3).toBe(Math.floor((240 * 135) / 330));
+    expect(s.glass.specks.length / 3).toBe(Math.floor((240 * 135) / s.p.SPECK_AREA));
     let alive = 0;
     for (let i = 0; i < s.drops.n; i++) if (s.drops.alive[i]) alive++;
     expect(alive).toBeGreaterThan(110);

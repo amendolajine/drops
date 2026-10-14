@@ -124,7 +124,7 @@ export function createRace(seed: string | number, options: RaceOptions = {}): Ra
       wanted: new Int16Array(3),
       locked: 0,
     },
-    car: { accelS: car.accelS, keys: car.keys, kmh: 0, antiStallLogged: 0 },
+    car: { accelS: car.accelS, keys: car.keys, road: car.road, kmh: 0, antiStallLogged: 0 },
     events: schedule.events,
     creatures: schedule.creatures,
     lightning: schedule.lightning,

@@ -2,6 +2,7 @@
 // told which drops were picked. Every event is a field modifier, a mass source or an obstacle, never a
 // per-drop script (R4 3.5), so "events never target a drop" is true by construction.
 
+import { roadShake } from './car.ts';
 import { candidateOut, killDrop } from './drops.ts';
 import { cosApprox, floor, round, sinApprox, TAU } from './fmath.ts';
 import { L, logEvent } from './log.ts';
@@ -29,6 +30,17 @@ export interface Schedule {
   events: SimEvent[];
   creatures: Creature[];
   lightning: Int32Array;
+}
+
+/**
+ * Where creatures land: uniform in the band where the pack of drops is expected at that time, from the
+ * start box and the typical race speed only (never from the picks or the live race). MAP 3.3 allows
+ * "uniform on the glass or weighted by drop density"; this is the density of the race at that moment.
+ */
+function packX(p: Params, t: number, u: number): number {
+  const centre = (p.CAND_X_MIN + p.CAND_X_MAX) / 2 + p.PACK_SPEED * t;
+  const x = centre + (u < 0 ? u * p.PACK_BEHIND : u * p.PACK_AHEAD);
+  return x < 40 ? 40 : x > p.FINISH_X - 15 ? p.FINISH_X - 15 : x;
 }
 
 function sec(p: Params, s: number): number {
@@ -128,8 +140,8 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
       if (chance(ev, lp.flyGivenBrake)) {
         const land = t0 + p.BRAKE_DOWN_S + range(ev, 0.3, hold > 0.8 ? hold - 0.5 : 0.3);
         const life = range(ev, p.FLY_LIFE_MIN, p.FLY_LIFE_MAX);
-        const fx = range(ev, 60, 200);
-        const fy = range(ev, 15, 95);
+        const fx = packX(p, land, range(ev, -1, 1));
+        const fy = range(ev, p.PACK_Y_MIN, p.PACK_Y_MAX);
         const cr = newCreature(CR_FLY, events.length, fx, fy, p.FLY_R);
         cr.gripKmh = range(ev, p.FLY_GRIP_MIN, p.FLY_GRIP_MAX);
         const fe: SimEvent = {
@@ -148,8 +160,8 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
       }
     } else if (type === 'leaf') {
       const hold = range(ev, p.LEAF_HOLD_MIN, p.LEAF_HOLD_MAX);
-      e.x = range(ev, 60, 190);
-      e.y = range(ev, 15, 100);
+      e.x = packX(p, t0, range(ev, -1, 1));
+      e.y = range(ev, p.PACK_Y_MIN, p.PACK_Y_MAX);
       const cr = newCreature(CR_LEAF, events.length, e.x, e.y, range(ev, p.LEAF_R_MIN, p.LEAF_R_MAX));
       cr.outcome = chance(ev, 0.5) ? 0 : 1;
       e.endTick = sec(p, t0 + hold);
@@ -254,6 +266,8 @@ export function updateEvents(s: RaceState, rt: number): void {
   s.fx.pinMul = 1;
   s.fx.rainMul = 1;
   s.fx.evap = 0;
+  if (s.car.kmh >= p.ROAD_MIN_KMH && roadShake(s.car.road, rt, round(p.ROAD_S * p.TICK_HZ)))
+    s.fx.pinMul *= p.ROAD_MUL;
   const evs = s.events;
   for (let k = 0; k < evs.length; k++) {
     const e = evs[k];

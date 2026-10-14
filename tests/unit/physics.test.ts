@@ -31,9 +31,9 @@ describe('three forces and the pinning threshold (R4 1.2)', () => {
     expect(s.drops.y[big]).toBeGreaterThan(41);
     expect(Math.abs(s.drops.x[big] - 140)).toBeLessThan(0.5);
   });
-  it('dirty glass (default PPIN 130): every candidate size is pinned at the stop', () => {
+  it('default glass: every candidate size (and the monster) is pinned at the stop', () => {
     const s = bareRace();
-    const ids = [5.5, 7, 8.5].map((v, k) => addDrop(s, 40 + k * 30, 30, v));
+    const ids = [5.5, 7, 8.5, 13].map((v, k) => addDrop(s, 40 + k * 30, 30, v));
     run(s, 0, 300);
     for (const i of ids) expect(s.drops.moving[i]).toBe(0);
   });
@@ -81,7 +81,7 @@ describe('stick-slip from the visible dirt (R4 1.3)', () => {
     const i = addDrop(s, 20, 30, 7);
     s.glass.pin.fill(1);
     for (let x = 0; x < s.glass.pw; x++) {
-      const band = Math.floor(x / 12) % 2 === 0 ? 0.7 : 1.35;
+      const band = Math.floor(x / 12) % 2 === 0 ? 0.8 : 2.6; // clean glass, then a band of visible dirt
       for (let y = 0; y < s.glass.ph; y++) s.glass.pin[y * s.glass.pw + x] = band;
     }
     s.car.kmh = 65;

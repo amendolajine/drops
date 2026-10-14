@@ -241,6 +241,7 @@ export function mergeDrops(s: RaceState): void {
     head[idx] = i;
   }
   const mk = p.MERGE_K;
+  const mkRacers = p.RACER_MERGE_K;
   for (let i = 0; i < d.n; i++) {
     if (!d.alive[i] || d.held[i] >= 0) continue;
     let cx = floor(d.x[i] / cs) + 1;
@@ -261,7 +262,7 @@ export function mergeDrops(s: RaceState): void {
             if (!parentPair) {
               const dx = d.x[j] - d.x[i];
               const dy = d.y[j] - d.y[i];
-              const rr = (d.a[i] + d.a[j]) * mk;
+              const rr = (d.a[i] + d.a[j]) * (d.cand[i] >= 0 && d.cand[j] >= 0 ? mkRacers : mk);
               if (dx * dx + dy * dy <= rr * rr) merge(s, i, j);
             }
           }

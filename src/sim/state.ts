@@ -284,7 +284,7 @@ export interface RaceState {
   /** candidate index picked by PLAYER (1) and RIVAL (2), -1 none; index 0 unused */
   picks: Int8Array;
   knocks: Knocks;
-  car: { accelS: number; keys: Float64Array; kmh: number; antiStallLogged: number };
+  car: { accelS: number; keys: Float64Array; road: Int32Array; kmh: number; antiStallLogged: number };
   events: SimEvent[];
   creatures: Creature[];
   /** lightning flash race ticks (cosmetic) */

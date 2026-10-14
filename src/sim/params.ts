@@ -28,25 +28,31 @@ export const DEFAULT_PARAMS = {
   G: 7.7,
   /** Wind drag: Fw = CW k a^2 U^2, uN/(mm^2 (m/s)^2). Calibrated so a 20 uL drop follows the wind above 42 km/h. R4 1.2 (Andre 2019). */
   CW: 0.167,
-  /** Pinning: Fpin = PPIN a m, uN/mm. 59.8 = clean glass, 130 = "dirty car glass" default. R4 1.2, 3.10. */
-  PPIN: 130,
+  /** Pinning: Fpin = PPIN a m, uN/mm. 59.8 = clean glass (R4 1.2). R4 3.10 chose 130 ("dirty car glass") in a
+   *  prototype where a drop rode on its own wet trail; here the trail is written at the tail (a drop never
+   *  lubricates itself), and 130 left drops pinned for tens of seconds. TUNING: 130 -> 70 (median race 35 s,
+   *  about 0.8 stops per candidate, every candidate still pinned at the red light). */
+  PPIN: 70,
   /** A moving drop keeps going while |F| > DYN x Fpin (static vs dynamic threshold). R4 1.3 (Kaneda 1993). */
   DYN: 0.8,
-  /** Tempo: v = KV (|F| - DYN Fpin) / a, mm/s. R4 1.4 (Le Grand 2005), tuned in R4 6.2 to a 35 s median. */
-  KV: 0.1,
+  /** Tempo: v = KV (|F| - DYN Fpin) / a, mm/s. R4 1.4 (Le Grand 2005). TUNING: 0.10 -> 0.075 with PPIN 70
+   *  (median decision time 35 s in 400 bot races). */
+  KV: 0.075,
   /** Speed cap, mm/s. R4 3.10. */
   VMAX: 60,
 
   // ---------- pin field: the visible dirt (R4 1.3) ----------
-  /** Dirt contrast: m = 1 + HET_AMP n, n in [-1, 1]. R4 3.10. */
-  HET_AMP: 0.55,
+  /** Invisible dirt contrast: m = 1 + HET_AMP n, n in [-1, 1]. R4 3.10 says 0.55. TUNING: 0.55 -> 0.3, so stops
+   *  come mostly from the visible specks and smudges (MAP 3.2: "lo scatto nasce dallo sporco visibile"). */
+  HET_AMP: 0.3,
   /** Noise octave sizes, mm. R4 1.3. */
   HET_SCALE1: 9,
   HET_SCALE2: 3.5,
   /** Weight of the large octave (the small one gets 1 - this). R4 6 prototype. */
   HET_W1: 0.7,
-  /** One dirt speck per this many mm^2. R4 3.10 ("1 per 330 mm^2"). */
-  SPECK_AREA: 330,
+  /** One dirt speck per this many mm^2. R4 3.10 says 330. TUNING: 330 -> 600 (with 330 a drop met about 4 specks
+   *  on its path and races ran 55 s). */
+  SPECK_AREA: 600,
   /** Pinning multiplier inside a speck. R4 3.10. */
   SPECK_MUL: 2.4,
   SPECK_R_MIN: 1,
@@ -93,6 +99,8 @@ export const DEFAULT_PARAMS = {
   // ---------- merging (R4 1.6) ----------
   /** Merge when the centre distance < MERGE_K (a1 + a2). R4 3.10. */
   MERGE_K: 0.85,
+  /** Merge reach between two candidates (racer + racer). R4 6.3 suggests 0.75 to cut gulps (untested there). TUNING. */
+  RACER_MERGE_K: 0.85,
   /** After a merge: pinning x BURST_MUL for BURST_S. R4 1.6. */
   BURST_S: 0.3,
   BURST_MUL: 0.6,
@@ -114,18 +122,24 @@ export const DEFAULT_PARAMS = {
 
   // ---------- candidates (MAP 3.1) ----------
   CAND_COUNT: 6,
-  /** Start box, mm. MAP 3.1 (x 10-50, y 10-52; x 10-70 to be tried). */
+  /** Start box, mm. MAP 3.1 (x 10-50, y 10-52; "x 10-70 to be tried"). TUNING: x 10-60, because 20 mm spacing in
+   *  x 10-50 needed the generator fallback in 13.5% of glasses (map limit: 1 in 20); 10-60 needs it in 0 of 400. */
   CAND_X_MIN: 10,
-  CAND_X_MAX: 50,
+  CAND_X_MAX: 60,
   CAND_Y_MIN: 10,
   CAND_Y_MAX: 52,
   /** Candidate volume range, uL. MAP 3.1 (5.5-8.5 uL). */
   CAND_V_MIN: 5.5,
   CAND_V_MAX: 8.5,
-  /** Minimum distance between candidates, mm. MAP 2.1 (20 mm proposed to cut gulps; prototype 17). */
-  CAND_SPACING: 17,
-  /** Bigger drops take the spots further back, ranked on x plus this much noise, mm. MAP 3.1 ("le partenze avanzate vanno a gocce piu piccole"). Noise: CHOICE. */
+  /** Minimum distance between candidates, mm. MAP 2.1 (20 mm proposed to cut gulps; R4 prototype 17). Value: MAP. */
+  CAND_SPACING: 20,
+  /** Noise when roles pick their spot (favourites back, outsider front), mm. CHOICE. */
   CAND_X_JITTER: 10,
+  /** Candidate volumes are set so every drop has about the same expected arrival on average glass
+   *  ("le partenze avanzate vanno a gocce piu piccole", MAP 3.1), then varied by +- this share. CHOICE, tuned. */
+  CAND_ETA_NOISE: 0.1,
+  /** Relative race speed per uL above CAND_V_MIN, used for that balance. TUNING (measured in 250 rollouts, 2026-10-14). */
+  CAND_SPEED_PER_UL: 0.066,
   /** "the monster" glass: volume of the big drop, uL. MAP 3.1 ("una goccia enorme"). Range: CHOICE. */
   MONSTER_V_MIN: 11,
   MONSTER_V_MAX: 13,
@@ -157,6 +171,18 @@ export const DEFAULT_PARAMS = {
   /** Hard end: the picked drop nearest the finish wins. MAP 2.1. */
   HARD_END_S: 90,
 
+  // ---------- road texture (R4 1.9, R4 6.1) ----------
+  /** Small shakes from the road surface while the car moves: pinning x ROAD_MUL for ROAD_S, every
+   *  ROAD_GAP_MIN-ROAD_GAP_MAX s, the same for every drop. Not an announced event: it is the road.
+   *  Source: R4 1.9 (Noblin 2004, vibration lowers effective pinning); R4 6.1 prototype ran bumps every
+   *  ~11 s at x0.6. Values: TUNING (added 2026-10-14 after drops stayed pinned for tens of seconds). */
+  ROAD_MUL: 0.75,
+  ROAD_S: 0.2,
+  ROAD_GAP_MIN: 2,
+  ROAD_GAP_MAX: 6,
+  /** below this car speed the road does not shake the glass, km/h. CHOICE. */
+  ROAD_MIN_KMH: 10,
+
   // ---------- event schedule (MAP 3.3) ----------
   /** No event in the first 4 s after green. MAP 3.3. */
   EVENT_QUIET_S: 4,
@@ -185,6 +211,16 @@ export const DEFAULT_PARAMS = {
   /** Ramp down and back up, s. CHOICE. */
   BRAKE_DOWN_S: 1,
   BRAKE_UP_S: 2,
+
+  // where creatures land: the band where the pack is expected (MAP 3.3 "pesato sulla densita delle gocce")
+  /** Typical candidate speed, mm/s. TUNING: measured mean speed of finishing candidates (about 5-5.5 mm/s). */
+  PACK_SPEED: 5.5,
+  /** The band reaches this far behind / ahead of the expected pack centre, mm. CHOICE. */
+  PACK_BEHIND: 25,
+  PACK_AHEAD: 45,
+  /** Height band of the pack, mm. CHOICE (candidates start at y 10-52 and slide down). */
+  PACK_Y_MIN: 15,
+  PACK_Y_MAX: 90,
 
   // fly (MAP 3.3 event 16, 3.4)
   /** Creatures land only below this speed. MAP 3.3. */
@@ -269,6 +305,8 @@ export const DEFAULT_PARAMS = {
   RIVAL_KNOCK_P: 0.75,
   /** Jolts his drop when it has been stuck for more than 2 s. MAP 3.5. */
   RIVAL_STUCK_S: 2,
+  /** ... "stuck" only counts while the car is going: at a stop every drop is still. CHOICE (interpretation of MAP 3.5). */
+  RIVAL_STUCK_MIN_KMH: 45,
   /** 5% of his knocks land at a random spot. MAP 3.5. */
   RIVAL_RANDOM_KNOCK: 0.05,
 
@@ -316,7 +354,7 @@ export const LIGHTS: Record<Light, LightProfile> = {
     rainPerS: 8,
     bump: 0.55,
     brake: 0.45,
-    flyGivenBrake: 0.6,
+    flyGivenBrake: 1,
     leaf: 0.3,
     downpour: 0.2,
     clearing: 0.15,

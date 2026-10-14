@@ -181,6 +181,21 @@ function profilesFor(kind: GlassKind, p: Params): ProfileRule[] {
   return [fav, mid, out, sleep, free, free];
 }
 
+/**
+ * Relative race speed of a candidate of volume v (1 at CAND_V_MIN), from the measured average speed of
+ * finishing candidates in rollouts (TUNING 2026-10-14: 4.6 mm/s at 5.5 uL to 5.6 mm/s at 8.5 uL). The pure
+ * three-force formula predicts a much steeper curve because it ignores merges and wet trails along the way.
+ */
+export function relSpeed(p: Params, v: number): number {
+  return 1 + p.CAND_SPEED_PER_UL * (v - p.CAND_V_MIN);
+}
+
+/** Volume in [lo, hi] whose relSpeed equals `rel` (clamped at the ends). */
+function volumeForSpeed(p: Params, rel: number, lo: number, hi: number): number {
+  const v = p.CAND_V_MIN + (rel - 1) / p.CAND_SPEED_PER_UL;
+  return v < lo ? lo : v > hi ? hi : v;
+}
+
 export function buildGlass(
   p: Params,
   glassStream: Stream,
@@ -296,41 +311,54 @@ export function buildGlass(
       }
     }
   }
-  // volumes per profile (twins share one volume)
+  // roles: the sleeper takes the highest spot; the monster and the favourites the spots furthest back;
+  // the outsider the most advanced spot; the others the rest (MAP 3.1 profiles, hidden from the player)
+  const used: boolean[] = [false, false, false, false, false, false, false, false];
+  const spotOf: number[] = [];
+  for (let i = 0; i < n; i++) spotOf.push(-1);
+  const takeSpot = (i: number, score: (j: number) => number) => {
+    let best = -1;
+    for (let j = 0; j < n; j++) if (!used[j] && (best < 0 || score(j) < score(best))) best = j;
+    spotOf[i] = best;
+    used[best] = true;
+  };
+  const order = [PROFILE_SLEEPER, PROFILE_MONSTER, PROFILE_FAVORITE, PROFILE_OUTSIDER];
+  for (const prof of order) {
+    for (let i = 0; i < n; i++) {
+      if (rules[i].profile !== prof || spotOf[i] >= 0) continue;
+      if (prof === PROFILE_SLEEPER) takeSpot(i, (j) => py[j]);
+      else if (prof === PROFILE_OUTSIDER) takeSpot(i, (j) => -px[j] + range(candStream, 0, p.CAND_X_JITTER));
+      else takeSpot(i, (j) => px[j] + range(candStream, 0, p.CAND_X_JITTER));
+    }
+  }
+  for (let i = 0; i < n; i++) if (spotOf[i] < 0) takeSpot(i, () => next(candStream));
+  // volumes: equal expected arrival on average glass at cruise, so advanced starts get smaller drops
+  // (MAP 3.1 "il generatore abbina le partenze avanzate a gocce piu piccole"), plus CAND_ETA_NOISE.
+  // The monster keeps its own size; the twins share one volume.
+  let xFront = -1;
+  for (let j = 0; j < n; j++) if (px[j] > xFront) xFront = px[j];
+  const vBase = range(candStream, p.CAND_V_MIN, p.CAND_V_MIN + 0.5);
+  const vRef = relSpeed(p, vBase);
   const vols: number[] = [];
   let twinV = -1;
   for (let i = 0; i < n; i++) {
-    let v = range(candStream, rules[i].vMin, rules[i].vMax);
-    if (kind === 'twins' && rules[i].profile === PROFILE_FAVORITE) {
+    const rule = rules[i];
+    const j = spotOf[i];
+    let v: number;
+    if (rule.profile === PROFILE_MONSTER) v = range(candStream, rule.vMin, rule.vMax);
+    else {
+      const want =
+        ((vRef * (p.FINISH_X - px[j])) / (p.FINISH_X - xFront)) *
+        (1 + range(candStream, -p.CAND_ETA_NOISE, p.CAND_ETA_NOISE));
+      v = volumeForSpeed(p, want, rule.vMin, rule.vMax);
+    }
+    if (kind === 'twins' && rule.profile === PROFILE_FAVORITE) {
       if (twinV < 0) twinV = v;
       else v = twinV;
     }
     vols.push(v);
   }
-  const used: boolean[] = [false, false, false, false, false, false, false, false];
   const specs: CandidateSpec[] = [];
-  const spotOf: number[] = [];
-  // the sleeper (if any) takes the highest spot
-  for (let i = 0; i < n; i++) spotOf.push(-1);
-  for (let i = 0; i < n; i++) {
-    if (rules[i].profile !== PROFILE_SLEEPER) continue;
-    let best = -1;
-    for (let j = 0; j < n; j++) if (!used[j] && (best < 0 || py[j] < py[best])) best = j;
-    spotOf[i] = best;
-    used[best] = true;
-  }
-  // the others: biggest volume first takes the free spot furthest back (x plus noise)
-  const noisyX: number[] = [];
-  for (let j = 0; j < n; j++) noisyX.push(px[j] + range(candStream, -p.CAND_X_JITTER, p.CAND_X_JITTER));
-  for (let round = 0; round < n; round++) {
-    let bi = -1;
-    for (let i = 0; i < n; i++) if (spotOf[i] < 0 && (bi < 0 || vols[i] > vols[bi])) bi = i;
-    if (bi < 0) break;
-    let bj = -1;
-    for (let j = 0; j < n; j++) if (!used[j] && (bj < 0 || noisyX[j] < noisyX[bj])) bj = j;
-    spotOf[bi] = bj;
-    used[bj] = true;
-  }
   for (let i = 0; i < n; i++) {
     const j = spotOf[i];
     specs.push({

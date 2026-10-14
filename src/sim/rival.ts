@@ -112,6 +112,7 @@ export function rivalThink(s: RaceState): void {
   else if (
     !m.joltedStuck &&
     d.stuck[slot] > p.RIVAL_STUCK_S * p.TICK_HZ &&
+    s.car.kmh >= p.RIVAL_STUCK_MIN_KMH &&
     s.knocks.left[RIVAL] > 0 &&
     !s.knocks.locked
   ) {
