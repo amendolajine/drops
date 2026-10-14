@@ -53,6 +53,7 @@ export function killDrop(s: RaceState, i: number): void {
   d.freeTop++;
 }
 
+/** Candidate c now lives in drop slot `slot` (at creation, or when a picked drop keeps its identity in a merge). */
 export function makeCandidate(s: RaceState, slot: number, c: number): void {
   s.drops.kind[slot] = KIND_CAND;
   s.drops.cand[slot] = c;
@@ -66,6 +67,8 @@ export function candidateOut(s: RaceState, c: number, reason: number, by: number
   if (k.state[c] !== CAND_RACING) return;
   k.state[c] = CAND_OUT;
   k.outTick[c] = raceTick(s);
+  k.endX[c] = s.drops.x[k.slot[c]];
+  k.endY[c] = s.drops.y[k.slot[c]];
   k.outReason[c] = reason;
   k.gulpedBy[c] = by;
   logEvent(s.log, s.tick, L.CAND_OUT, c, reason, by);
@@ -76,6 +79,8 @@ export function candidateFinish(s: RaceState, c: number, x: number, vx: number):
   const k = s.cands;
   if (k.state[c] !== CAND_RACING) return;
   k.state[c] = CAND_FINISHED;
+  k.endX[c] = x;
+  k.endY[c] = s.drops.y[k.slot[c]];
   const rt = raceTick(s);
   k.finishTick[c] = rt;
   let back = vx > 0 ? (x - s.p.FINISH_X) / vx : 0;

@@ -183,6 +183,9 @@ export interface Candidates {
   outTick: Int32Array;
   outReason: Uint8Array;
   gulpedBy: Int8Array;
+  /** where the candidate was when it left the race (out or finish): its slot is recycled afterwards */
+  endX: Float64Array;
+  endY: Float64Array;
   startX: Float64Array;
   startY: Float64Array;
   startV: Float64Array;
@@ -358,6 +361,8 @@ export function newCandidates(count: number): Candidates {
     outTick: new Int32Array(count).fill(-1),
     outReason: new Uint8Array(count),
     gulpedBy: new Int8Array(count).fill(-1),
+    endX: new Float64Array(count).fill(-1),
+    endY: new Float64Array(count).fill(-1),
     startX: new Float64Array(count),
     startY: new Float64Array(count),
     startV: new Float64Array(count),

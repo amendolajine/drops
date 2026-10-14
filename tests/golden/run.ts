@@ -1,7 +1,7 @@
 // Runs one golden case and returns its fingerprints. Pure: runs the same in Node and in every browser.
 
 import { createRace, hashState, step } from '../../src/sim/index.ts';
-import { PHASE_DONE, PLAYER, type RaceState, RIVAL } from '../../src/sim/state.ts';
+import { CAND_RACING, PHASE_DONE, PLAYER, type RaceState, RIVAL } from '../../src/sim/state.ts';
 import type { GoldenCase } from './cases.ts';
 
 export interface GoldenResult {
@@ -29,6 +29,7 @@ function fnv(text: string): string {
 
 function dropPos(s: RaceState, side: number): [number, number] {
   const c = s.picks[side];
+  if (s.cands.state[c] !== CAND_RACING) return [s.cands.endX[c], s.cands.endY[c]];
   const slot = s.cands.slot[c];
   return [s.drops.x[slot], s.drops.y[slot]];
 }

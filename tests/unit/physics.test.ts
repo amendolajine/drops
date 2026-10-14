@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { makeCandidate } from '../../src/sim/drops.ts';
 import { mergeDrops, stepDrops } from '../../src/sim/physics.ts';
+import { createRace, step } from '../../src/sim/race.ts';
 import {
   CAND_OUT,
+  CAND_RACING,
   OUT_GULPED,
+  PHASE_DONE,
   PHASE_RACING,
   PLAYER,
   R_GULP,
@@ -139,6 +142,68 @@ describe('merging, identity and the gulp rule (R4 1.6, 3.7; MAP 2.1)', () => {
       if (reason === R_GULP) expect(s.result.winner).toBe(PLAYER);
       expect(s.cands.state[1]).toBe(CAND_OUT);
       expect(s.cands.outReason[1]).toBe(OUT_GULPED);
+    }
+  });
+});
+
+describe('identity in a race: picked drops never lose to unpicked candidates (MAP 2.1, R4 3.7)', () => {
+  function racePair(vPicked: number, vOther: number) {
+    const s = bareRace();
+    s.mode = 'race';
+    s.phase = PHASE_RACING;
+    s.greenTick = 0;
+    const mine = addDrop(s, 100, 50, vPicked);
+    const other = addDrop(s, 101, 50, vOther);
+    const rivals = addDrop(s, 200, 20, 6);
+    makeCandidate(s, mine, 0);
+    makeCandidate(s, other, 1);
+    makeCandidate(s, rivals, 2);
+    s.picks[PLAYER] = 0;
+    s.picks[RIVAL] = 2;
+    run(s, 0, 1);
+    return s;
+  }
+  it('a smaller picked drop swallows a bigger unpicked candidate and keeps its identity', () => {
+    const s = racePair(5.6, 9);
+    expect(s.cands.state[0]).toBe(CAND_RACING);
+    expect(s.cands.state[1]).toBe(CAND_OUT);
+    expect(s.cands.gulpedBy[1]).toBe(0);
+    expect(s.drops.v[s.cands.slot[0]]).toBeCloseTo(14.6, 12);
+    expect(s.result.reason).toBe(0);
+  });
+  it('in rollouts every candidate races: the bigger one keeps its identity', () => {
+    const s = bareRace();
+    const a = addDrop(s, 100, 50, 5.6);
+    const b = addDrop(s, 101, 50, 9);
+    makeCandidate(s, a, 0);
+    makeCandidate(s, b, 1);
+    run(s, 0, 1);
+    expect(s.cands.state[0]).toBe(CAND_OUT);
+    expect(s.cands.state[1]).toBe(CAND_RACING);
+  });
+  it('the glass plays the same whatever was picked (no knocks, rival brain off)', () => {
+    for (let i = 0; i < 6; i++) {
+      const trace = (pp: number, pr: number) => {
+        const s = createRace(`same-glass-${i}`, { rivalAuto: false });
+        step(s, { picks: [{ who: 'player', cand: pp }] });
+        step(s, { picks: [{ who: 'rival', cand: pr }] });
+        const out: string[] = [];
+        while (s.phase !== PHASE_DONE && s.tick - s.greenTick < 1500) {
+          step(s);
+          if ((s.tick - s.greenTick) % 100 === 0) {
+            const d = s.drops;
+            let h = '';
+            for (let k = 0; k < d.n; k++) if (d.alive[k]) h += `${d.id[k]}:${d.x[k]}:${d.y[k]}:${d.v[k]};`;
+            out.push(h);
+          }
+        }
+        return out;
+      };
+      const a = trace(0, 1);
+      const b = trace(4, 5);
+      const n = Math.min(a.length, b.length);
+      expect(n).toBeGreaterThan(5);
+      expect(b.slice(0, n)).toEqual(a.slice(0, n));
     }
   });
 });

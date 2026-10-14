@@ -287,6 +287,8 @@ export function describe(s: RaceState, code: number, a: number, b: number, c: nu
       return 'final straight: knocks locked';
     case L.BLOCKED:
       return `candidate ${a} blocked by the ${cr(b)}`;
+    case L.SWALLOW_CAND:
+      return `candidate ${a} swallowed unpicked candidate ${b} (+${fmt(c, 2)} uL)`;
     case L.RIVAL_NOTICE:
       return `brother noticed the ${cr(a)}${b ? '' : ' (will not knock)'}`;
     default:

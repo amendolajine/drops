@@ -3,7 +3,7 @@
 // obstacles, wet trails, pearls, merges with the identity rules, evaporation and rain.
 
 import { decideGulp } from './director.ts';
-import { candidateFinish, candidateOut, killDrop, spawnDrop } from './drops.ts';
+import { candidateFinish, candidateOut, killDrop, makeCandidate, spawnDrop } from './drops.ts';
 import { cbrt, floor, round, sqrt } from './fmath.ts';
 import { pinAt, wetIndex } from './glass.ts';
 import { L, logEvent } from './log.ts';
@@ -293,10 +293,24 @@ function merge(s: RaceState, i: number, j: number): void {
   const ck = d.cand[k];
   const co = d.cand[o];
   if (ck >= 0 && co >= 0) {
-    // racer + racer: the gulp rule
-    logEvent(s.log, s.tick, L.GULP, ck, co, vo / vk);
-    candidateOut(s, co, OUT_GULPED, ck);
-    decideGulp(s, ck, co, vk, vo);
+    const pk = s.mode === 'race' && isPicked(s, ck);
+    const po = s.mode === 'race' && isPicked(s, co);
+    if (s.mode === 'race' && po && !pk) {
+      // a picked drop never loses its identity to an unpicked candidate (MAP 2.1 "resta sempre tua",
+      // R4 3.7): only the labels move. The drop slots and the physics are exactly those of any other merge,
+      // so the glass plays the same whatever was picked.
+      logEvent(s.log, s.tick, L.SWALLOW_CAND, co, ck, vk);
+      candidateOut(s, ck, OUT_GULPED, co);
+      makeCandidate(s, k, co);
+    } else if (s.mode === 'race' && pk && !po) {
+      logEvent(s.log, s.tick, L.SWALLOW_CAND, ck, co, vo);
+      candidateOut(s, co, OUT_GULPED, ck);
+    } else {
+      // rollout (every candidate races), or two picked drops (the gulp rule), or two unpicked ones
+      if (s.mode !== 'race' || (pk && po)) logEvent(s.log, s.tick, L.GULP, ck, co, vo / vk);
+      candidateOut(s, co, OUT_GULPED, ck);
+      decideGulp(s, ck, co, vk, vo);
+    }
   } else if (ck >= 0 && isPicked(s, ck)) {
     logEvent(s.log, s.tick, L.MERGE_PICKED, ck, vo, 0);
   }

@@ -48,11 +48,12 @@ export function decideGulp(s: RaceState, keeper: number, eaten: number, vk: numb
   else decide(s, keeper === pp ? PLAYER : RIVAL, R_GULP);
 }
 
+/** Share of its path a candidate has done, 0..1. An out candidate keeps the progress it had when it left:
+ *  its drop slot is recycled by then, so reading the slot would read another drop (metrics review). */
 export function progressOf(s: RaceState, c: number): number {
   const k = s.cands;
   if (k.state[c] === CAND_FINISHED) return 1;
-  const slot = k.slot[c];
-  const x = k.state[c] === CAND_RACING ? s.drops.x[slot] : s.drops.x[slot];
+  const x = k.state[c] === CAND_RACING ? s.drops.x[k.slot[c]] : k.endX[c];
   const span = s.p.FINISH_X - k.startX[c];
   const pr = span > 0 ? (x - k.startX[c]) / span : 1;
   return pr < 0 ? 0 : pr > 1 ? 1 : pr;
