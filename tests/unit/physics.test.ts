@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeCandidate } from '../../src/sim/drops.ts';
-import { mergeDrops, stepDrops } from '../../src/sim/physics.ts';
+import { evaporate, mergeDrops, spawnRain, stepDrops } from '../../src/sim/physics.ts';
 import { createRace, step } from '../../src/sim/race.ts';
 import {
   CAND_OUT,
@@ -13,6 +13,7 @@ import {
   R_GULP_DRAW,
   RIVAL,
 } from '../../src/sim/state.ts';
+import { measurePhysics } from '../../tools/sim/physics-measure.ts';
 import { addDrop, aliveCount, bareRace, totalVolume } from './helpers.ts';
 
 function run(s: ReturnType<typeof bareRace>, kmh: number, ticks: number) {
@@ -77,28 +78,76 @@ describe('speed sets the angle, size sets the speed (R4 1.4, 1.5)', () => {
   });
 });
 
-describe('stick-slip from the visible dirt (R4 1.3)', () => {
-  it('a drop on heterogeneous glass alternates moving and stuck at cruise speed', () => {
-    const s = bareRace({ HET_AMP: 0.55, SPECK_AREA: 330 });
-    // rebuild a dirty pin field by creating a normal race and borrowing its glass
-    const i = addDrop(s, 20, 30, 7);
-    s.glass.pin.fill(1);
-    for (let x = 0; x < s.glass.pw; x++) {
-      const band = Math.floor(x / 12) % 2 === 0 ? 0.8 : 2.6; // clean glass, then a band of visible dirt
-      for (let y = 0; y < s.glass.ph; y++) s.glass.pin[y * s.glass.pw + x] = band;
-    }
-    s.car.kmh = 65;
-    let switches = 0;
-    let last = s.drops.moving[i];
-    for (let t = 0; t < 1800 && s.drops.alive[i]; t++) {
+describe('stick-slip on generated glass (R4 1.3, physics review, D025)', () => {
+  it('frequent short stops at cruise, spread out in time, and the start follows the size', () => {
+    const m = measurePhysics({ glasses: 24, light: 'grey', seed: 'unit-phys', params: {} });
+    const sg = m.stop_and_go_at_cruise;
+    expect(sg.stops_per_candidate).toBeGreaterThan(2);
+    expect(sg.share_of_cruise_time_stuck).toBeGreaterThan(0.1);
+    expect(sg.share_of_cruise_time_stuck).toBeLessThan(0.45);
+    expect(sg.stop_duration_s_p10_p50_p90[1]).toBeLessThan(2.5);
+    // each drop feels the road on its own: restarts never come all in the same frame (outside potholes)
+    expect(sg.restarts_in_the_same_tick_outside_potholes_p50_p99_max[1]).toBeLessThanOrEqual(8);
+    // MAP 2.1 phase 3 "prima le grosse": bigger candidates leave first
+    expect(m.start.spearman_volume_vs_early_start_per_glass_mean).toBeGreaterThan(0.5);
+    expect(m.start.biggest_moves_first_share).toBeGreaterThan(0.33);
+    expect(m.no_teleports.pinned_drops_seen_in_the_seal_band).toBe(0);
+  });
+});
+
+describe('pothole, sun and seal (physics review, D025)', () => {
+  it('a pothole makes big drops slip down a little and leaves small ones in place', () => {
+    const s = bareRace();
+    s.events = [
+      { type: 'bump', warnTick: 0, startTick: 0, endTick: 18, x: -1, y: -1, kmh: 0, creature: -1, phase: 2 },
+    ];
+    const small = addDrop(s, 60, 40, 0.3);
+    const big = addDrop(s, 160, 40, 15);
+    s.car.kmh = 0;
+    s.fx.pinMul = s.p.BUMP_MUL;
+    s.fx.gMul = 1 + s.p.BUMP_G_EXTRA;
+    let maxStep = 0;
+    for (let t = 0; t < 18; t++) {
+      const y0 = s.drops.y[big];
       s.tick++;
-      // a little jolt every 2 s, like bumps, so a stuck drop can restart
-      if (t % 120 === 0) s.drops.jolt[i] = 15;
       stepDrops(s);
-      if (s.drops.moving[i] !== last) switches++;
-      last = s.drops.moving[i];
+      maxStep = Math.max(maxStep, Math.abs(s.drops.y[big] - y0));
     }
-    expect(switches).toBeGreaterThan(3);
+    expect(s.drops.x[small]).toBe(60);
+    expect(s.drops.y[small]).toBe(40);
+    expect(s.drops.y[big]).toBeGreaterThan(40.5);
+    expect(maxStep).toBeLessThanOrEqual(s.p.VMAX / s.p.TICK_HZ);
+  });
+  it('evaporation goes with the contact radius: small drops vanish first, big ones lose a little', () => {
+    const s = bareRace();
+    const tiny = addDrop(s, 40, 40, 0.15);
+    const mid = addDrop(s, 100, 40, 1);
+    const cand = addDrop(s, 160, 40, 7);
+    const v0 = s.drops.v[cand];
+    for (let t = 0; t < 8 * 60; t++) evaporate(s);
+    expect(s.drops.alive[tiny]).toBe(0);
+    expect(s.drops.alive[mid]).toBe(1);
+    const lost = 1 - s.drops.v[cand] / v0;
+    expect(lost).toBeGreaterThan(0.05);
+    expect(lost).toBeLessThan(0.2);
+  });
+  it('the bottom seal takes a pinned drop too', () => {
+    const s = bareRace();
+    const i = addDrop(s, 100, s.p.H - 0.2, 2);
+    run(s, 0, 1);
+    expect(s.drops.alive[i]).toBe(0);
+  });
+  it('rain lands inside the glass, never in the seal band', () => {
+    const s = bareRace({ RAIN_SCALE: 50 });
+    for (let t = 0; t < 600; t++) spawnRain(s, s.streams.rain, 1);
+    let n = 0;
+    for (let i = 0; i < s.drops.n; i++) {
+      if (!s.drops.alive[i]) continue;
+      n++;
+      expect(s.drops.y[i]).toBeGreaterThanOrEqual(s.drops.a[i] - 1e-9);
+      expect(s.drops.y[i]).toBeLessThanOrEqual(s.p.H - s.drops.a[i] + 1e-9);
+    }
+    expect(n).toBeGreaterThan(100);
   });
 });
 

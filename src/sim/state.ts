@@ -305,6 +305,8 @@ export interface RaceState {
   hopSeed: number;
   /** scare rolls: hashFloat(knockSeed, creature * 4 + side, that side's attempt on it), independent per side */
   knockSeed: number;
+  /** road vibration: phase and dice of each drop come from hash(roadSeed, drop id, ...) */
+  roadSeed: number;
   glass: Glass;
   drops: Drops;
   gridHead: Int32Array;
@@ -315,12 +317,13 @@ export interface RaceState {
   /** candidate index picked by PLAYER (1) and RIVAL (2), -1 none; index 0 unused */
   picks: Int8Array;
   knocks: Knocks;
-  car: { accelS: number; keys: Float64Array; road: Int32Array; kmh: number; antiStallLogged: number };
+  car: { accelS: number; keys: Float64Array; kmh: number; antiStallLogged: number };
   events: SimEvent[];
   creatures: Creature[];
   /** lightning flash race ticks (cosmetic) */
   lightning: Int32Array;
-  fx: { pinMul: number; rainMul: number; evap: number };
+  /** this tick's field modifiers from events: pinning, rain rate, evaporation on/off, gravity (pothole push) */
+  fx: { pinMul: number; rainMul: number; evap: number; gMul: number };
   rival: RivalMind;
   director: Director;
   result: Result;

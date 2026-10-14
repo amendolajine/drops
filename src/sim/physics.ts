@@ -1,13 +1,14 @@
-// Drop physics for one fixed tick (R4 1.2-1.9, 3.9): three forces, pinning with hysteresis (stick-slip),
-// speed linear in the excess force, airflow bending the path backward, meander toward cleaner glass,
-// obstacles, wet trails, pearls, merges with the identity rules, evaporation and rain.
+// Drop physics for one fixed tick (R4 1.2-1.9, 3.9): three forces, pinning read on the front arc of the contact
+// line with hysteresis (stick-slip), per-drop road vibration, speed linear in the excess force, airflow bending
+// the path backward, meander toward cleaner glass, obstacles, wet trails, pearls, merges with the identity rules,
+// evaporation and rain.
 
 import { decideGulp } from './director.ts';
 import { candidateFinish, candidateOut, killDrop, makeCandidate, spawnDrop } from './drops.ts';
 import { cbrt, floor, round, sqrt } from './fmath.ts';
 import { pinAt, wetIndex } from './glass.ts';
 import { L, logEvent } from './log.ts';
-import { hashFloat, next, type Stream } from './rng.ts';
+import { hash3, hashFloat, next, type Stream } from './rng.ts';
 import {
   CR_LANDED,
   KIND_AMBIENT,
@@ -23,15 +24,54 @@ import {
 // meander probes at +-0.35 rad (about 20 degrees), as literals (R4 3.2 rule 4)
 const PROBE_COS = 0.9393727128473789;
 const PROBE_SIN = 0.34289780745545134;
+// the front arc of the contact line is read at 0 and +-0.7 rad (40 degrees) from the push direction
+const ARC_COS = 0.7648421872844885;
+const ARC_SIN = 0.644217687237691;
 
+/** A rain drop lands somewhere on the glass, never inside the bottom seal band or on the sticker. */
 export function spawnRain(s: RaceState, stream: Stream, rateMul: number): void {
   const p = s.p;
   const rate = s.lightProfile.rainPerS * p.RAIN_SCALE * rateMul;
   if (next(stream) >= rate * s.dt) return;
   const x = next(stream) * p.W;
-  const y = next(stream) * p.H;
   const u = next(stream);
-  spawnDrop(s, x, y, p.RAIN_V_MIN + p.RAIN_V_SPAN * u * u * u, KIND_AMBIENT);
+  const v = p.RAIN_V_MIN + p.RAIN_V_SPAN * u * u * u;
+  const a = cbrt(v / p.CAP_K, 1);
+  const y = a + next(stream) * (p.H - 2 * a);
+  const st = s.glass.stickers;
+  if (st.length === 3) {
+    const dx = x - st[0];
+    const dy = y - st[1];
+    if (dx * dx + dy * dy < st[2] * st[2]) return; // it runs off the sticker
+  }
+  spawnDrop(s, x, y, v, KIND_AMBIENT);
+}
+
+/**
+ * This drop's road vibration this tick: 1 (none) or a pinning multiplier in [ROAD_MUL_MIN, ROAD_MUL_MAX].
+ * Each drop has its own phase and dice (counter hashes of its id), so restarts are spread out (D025).
+ */
+export function roadKick(s: RaceState, i: number): number {
+  const p = s.p;
+  const kmh = s.car.kmh;
+  if (kmh < p.ROAD_MIN_KMH) return 1;
+  const len = round(p.ROAD_S * p.TICK_HZ);
+  const id = s.drops.id[i];
+  const phase = hash3(s.roadSeed, id, -1) % len;
+  const slot = floor((s.tick + phase) / len);
+  const u = hashFloat(s.roadSeed, id, slot);
+  // the road shakes the glass harder and more often as the car goes faster: rate ~ speed, strength ~ speed^2
+  const f = kmh < p.ROAD_REF_KMH ? kmh / p.ROAD_REF_KMH : 1;
+  const chance = p.ROAD_RATE * p.ROAD_S * f;
+  if (u >= chance) return 1;
+  const full = p.ROAD_MUL_MIN + (p.ROAD_MUL_MAX - p.ROAD_MUL_MIN) * (u / chance);
+  return 1 - (1 - full) * f * f;
+}
+
+/** Effective pinning of the glass at a point: dirt field x wet trail. */
+function edgePin(s: RaceState, x: number, y: number): number {
+  const g = s.glass;
+  return pinAt(g, x, y) * (1 - s.p.WET_K * g.wet[wetIndex(g, s.p.WET_CELL, x, y)]);
 }
 
 /** Wet trails fade with a 25 s half-life, applied every 0.5 s (30 ticks). R4 1.7. */
@@ -58,6 +98,7 @@ export function stepDrops(s: RaceState): void {
   const FIN = p.FINISH_X;
   const cell = p.WET_CELL;
   const pinMulGlobal = s.fx.pinMul;
+  const gMul = s.fx.gMul;
   const wetK = p.WET_K;
   const stick = g.stickers;
   const hasSticker = stick.length === 3;
@@ -87,10 +128,19 @@ export function stepDrops(s: RaceState): void {
     const tilt = p.FLOW_SWIRL * (1 - x / W) * (0.5 - y / H);
     const Fw = p.CW * k * a * a * U2;
     const Fx = Fw;
-    const Fy = p.G * a * a * a - Fw * tilt;
+    const Fy = p.G * a * a * a * gMul - Fw * tilt;
     const F = sqrt(Fx * Fx + Fy * Fy);
-    // 2. pinning: visible dirt x wet trail x bumps x merge burst x knock jolt (R4 1.3, 1.6, 1.7, 1.9)
-    let m = pinAt(g, x, y) * (1 - wetK * g.wet[wetIndex(g, cell, x, y)]) * pinMulGlobal;
+    // 2. pinning on the front arc of the contact line, where it catches (R4 1.3, Furmidge): the strongest of
+    //    three points at radius a, at 0 and +-40 degrees from the push; then events, merge burst, knock jolt
+    //    and this drop's road vibration (R4 1.6, 1.7, 1.9)
+    const fx0 = F > 0 ? Fx / F : 0;
+    const fy0 = F > 0 ? Fy / F : 1;
+    let m = edgePin(s, x + fx0 * a, y + fy0 * a);
+    const mL = edgePin(s, x + (fx0 * ARC_COS - fy0 * ARC_SIN) * a, y + (fx0 * ARC_SIN + fy0 * ARC_COS) * a);
+    const mR = edgePin(s, x + (fx0 * ARC_COS + fy0 * ARC_SIN) * a, y + (-fx0 * ARC_SIN + fy0 * ARC_COS) * a);
+    if (mL > m) m = mL;
+    if (mR > m) m = mR;
+    m *= pinMulGlobal * roadKick(s, i);
     if (d.burst[i] > 0) {
       m *= p.BURST_MUL;
       d.burst[i]--;
@@ -109,6 +159,11 @@ export function stepDrops(s: RaceState): void {
       d.vx[i] = 0;
       d.vy[i] = 0;
       d.contact[i] = 0;
+      // the bottom seal takes a drop whether it moves or not (physics review: pinned drops stayed in the band)
+      if (y > H - 0.5 * a) {
+        if (d.cand[i] >= 0) candidateOut(s, d.cand[i], OUT_GUTTER, -1);
+        killDrop(s, i);
+      }
       continue;
     }
     d.stuck[i] = 0;
@@ -325,14 +380,15 @@ function merge(s: RaceState, i: number, j: number): void {
   killDrop(s, o);
 }
 
-/** Sun break: dV/dt = -c / a, so small drops vanish first (R4 3.5, MAP 3.3 event 12). */
+/** Sun break: dV/dt = -c a (pinned contact line, diffusion-limited; D025). Small drops lose a bigger share of
+ *  their volume (the share goes as 1/a^2), so they shrink and vanish first (MAP 3.3 event 12). */
 export function evaporate(s: RaceState): void {
   const p = s.p;
   const d = s.drops;
   const dt = s.dt;
   for (let i = 0; i < d.n; i++) {
     if (!d.alive[i]) continue;
-    const v = d.v[i] - (p.EVAP_C / d.a[i]) * dt;
+    const v = d.v[i] - p.EVAP_C * d.a[i] * dt;
     if (v < p.V_VANISH) {
       if (d.cand[i] >= 0) candidateOut(s, d.cand[i], OUT_EVAPORATED, -1);
       killDrop(s, i);

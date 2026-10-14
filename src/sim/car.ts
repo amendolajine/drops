@@ -2,42 +2,17 @@
 // then 0 -> cruise in 3-6 s, cruise 65 +- 5 km/h keyframes every 5 s, scheduled braking events,
 // and the anti-stall push (+30 km/h over 3 s at 50 s). A pure function of the race clock and the schedule.
 
-import { ceil, floor, max, round } from './fmath.ts';
+import { ceil, floor, max } from './fmath.ts';
 import type { Params } from './params.ts';
 import { next, range, type Stream } from './rng.ts';
 import type { RaceState, SimEvent } from './state.ts';
 
-export function initCar(
-  p: Params,
-  carStream: Stream,
-): { accelS: number; keys: Float64Array; road: Int32Array } {
+export function initCar(p: Params, carStream: Stream): { accelS: number; keys: Float64Array } {
   const accelS = range(carStream, p.ACCEL_S_MIN, p.ACCEL_S_MAX);
   const n = ceil(p.HARD_END_S / p.CRUISE_KEY_S) + 3;
   const keys = new Float64Array(n);
   for (let i = 0; i < n; i++) keys[i] = (next(carStream) * 2 - 1) * p.CRUISE_JITTER;
-  // road texture: start ticks of the small shakes (race ticks), drawn once for the whole race
-  const starts: number[] = [];
-  let t = range(carStream, p.ROAD_GAP_MIN, p.ROAD_GAP_MAX);
-  while (t < p.HARD_END_S + 1) {
-    starts.push(round(t * p.TICK_HZ));
-    t += range(carStream, p.ROAD_GAP_MIN, p.ROAD_GAP_MAX);
-  }
-  return { accelS, keys, road: Int32Array.from(starts) };
-}
-
-/** True while a road shake is active at race tick rt (binary search over the start ticks). */
-export function roadShake(road: Int32Array, rt: number, durTicks: number): boolean {
-  let lo = 0;
-  let hi = road.length - 1;
-  let found = -1;
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1;
-    if (road[mid] <= rt) {
-      found = mid;
-      lo = mid + 1;
-    } else hi = mid - 1;
-  }
-  return found >= 0 && rt < road[found] + durTicks;
+  return { accelS, keys };
 }
 
 /** 0..1 weight of a braking event at race tick rt (1 = at the brake's target speed). */

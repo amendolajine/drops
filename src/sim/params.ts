@@ -40,11 +40,13 @@ export const DEFAULT_PARAMS = deepFreeze({
    *  lubricates itself), and 130 left drops pinned for tens of seconds. TUNING: 130 -> 70 (median race 35 s,
    *  about 0.8 stops per candidate, every candidate still pinned at the red light). */
   PPIN: 70,
-  /** A moving drop keeps going while |F| > DYN x Fpin (static vs dynamic threshold). R4 1.3 (Kaneda 1993). */
-  DYN: 0.8,
+  /** A moving drop keeps going while |F| > DYN x Fpin (static vs dynamic threshold). R4 1.3 (Kaneda 1993) gives
+   *  0.8. TUNING (D025): 0.8 -> 0.88, so a moving drop stops on dirt at 1.14x the pinning it can start from (the
+   *  physics review asked for about 0.9: frequent short stops instead of long stalls). */
+  DYN: 0.88,
   /** Tempo: v = KV (|F| - DYN Fpin) / a, mm/s. R4 1.4 (Le Grand 2005). TUNING: 0.10 -> 0.075 with PPIN 70
-   *  (median decision time 35 s in 400 bot races). */
-  KV: 0.075,
+   *  (D012), then 0.075 -> 0.095 with the stop-and-go retune (D025: median winner time 34 s in 120 glasses). */
+  KV: 0.095,
   /** Speed cap, mm/s. R4 3.10. */
   VMAX: 60,
 
@@ -57,9 +59,9 @@ export const DEFAULT_PARAMS = deepFreeze({
   HET_SCALE2: 3.5,
   /** Weight of the large octave (the small one gets 1 - this). R4 6 prototype. */
   HET_W1: 0.7,
-  /** One dirt speck per this many mm^2. R4 3.10 says 330. TUNING: 330 -> 600 (with 330 a drop met about 4 specks
-   *  on its path and races ran 55 s). */
-  SPECK_AREA: 600,
+  /** One dirt speck per this many mm^2. R4 3.10 says 330. TUNING: 330 -> 600 (D012), back to 330 in D025: with
+   *  pinning read at the front edge and per-drop road vibration, specks make short stops instead of long stalls. */
+  SPECK_AREA: 330,
   /** Pinning multiplier inside a speck. R4 3.10. */
   SPECK_MUL: 2.4,
   SPECK_R_MIN: 1,
@@ -92,8 +94,10 @@ export const DEFAULT_PARAMS = deepFreeze({
   STEER_AHEAD: 1.5,
 
   // ---------- pearls (R4 1.7) ----------
-  /** Shed pearls above this speed, mm/s, and above this volume, uL. R4 1.7 (Podgorski 2001). */
-  SHED_V: 5,
+  /** Shed pearls above this speed, mm/s, and above this volume, uL. R4 1.7 (Podgorski 2001: only fast drops shed).
+   *  R4 3.10 says 5 mm/s for its faster prototype; TUNING (D025): 5 -> 9.5, about the 80th percentile of racer speed
+   *  at cruise (`npm run physics`), so the dotted trail marks the fast moments. */
+  SHED_V: 9.5,
   SHED_VMIN: 3,
   /** Pearl volume as a share of the drop. R4 1.7. */
   SHED_FRAC: 0.03,
@@ -142,6 +146,11 @@ export const DEFAULT_PARAMS = deepFreeze({
   CAND_SPACING: 20,
   /** Noise when roles pick their spot (favourites back, outsider front), mm. CHOICE. */
   CAND_X_JITTER: 10,
+  /** Candidate spots keep this much clear glass around them: no speck or smudge within a + this, no old wet streak
+   *  under them (only the middle drop starts on its streak), and the invisible pin noise is flat there. Then the
+   *  start order follows the size, MAP 2.1 phase 3 "prima le grosse" (physics review: the smallest drop started
+   *  first in 60% of glasses). mm, CHOICE (D025). */
+  CAND_CLEAN_R: 2,
   /** Candidate volumes are set so every drop has about the same expected arrival on average glass
    *  ("le partenze avanzate vanno a gocce piu piccole", MAP 3.1), then varied by +- this share. CHOICE, tuned. */
   CAND_ETA_NOISE: 0.1,
@@ -178,15 +187,18 @@ export const DEFAULT_PARAMS = deepFreeze({
   /** Hard end: the picked drop nearest the finish wins. MAP 2.1. */
   HARD_END_S: 90,
 
-  // ---------- road texture (R4 1.9, R4 6.1) ----------
-  /** Small shakes from the road surface while the car moves: pinning x ROAD_MUL for ROAD_S, every
-   *  ROAD_GAP_MIN-ROAD_GAP_MAX s, the same for every drop. Not an announced event: it is the road.
-   *  Source: R4 1.9 (Noblin 2004, vibration lowers effective pinning); R4 6.1 prototype ran bumps every
-   *  ~11 s at x0.6. Values: TUNING (added 2026-10-14 after drops stayed pinned for tens of seconds). */
-  ROAD_MUL: 0.75,
+  // ---------- road vibration, per drop (R4 1.9; D025 supersedes D013) ----------
+  /** While the car moves the glass trembles all the time. Each drop's contact line lets go for a short moment when
+   *  its own oscillation beats the pinning (Noblin 2004, R4 1.9): a moment lasts ROAD_S, comes ROAD_RATE times per
+   *  second per drop at ROAD_REF_KMH (fewer when slower), and multiplies that drop's pinning by a value between
+   *  ROAD_MUL_MIN (strongest) and ROAD_MUL_MAX. Phase and dice come from a counter hash of the drop's id, so drops
+   *  restart one by one and never all in the same frame (physics review: the old glass-wide pulse every 2-6 s
+   *  restarted up to 55 drops at once). Values: CHOICE, tuned with `npm run physics` (D025). */
   ROAD_S: 0.2,
-  ROAD_GAP_MIN: 2,
-  ROAD_GAP_MAX: 6,
+  ROAD_RATE: 1,
+  ROAD_REF_KMH: 65,
+  ROAD_MUL_MIN: 0.5,
+  ROAD_MUL_MAX: 0.9,
   /** below this car speed the road does not shake the glass, km/h. CHOICE. */
   ROAD_MIN_KMH: 10,
 
@@ -202,13 +214,14 @@ export const DEFAULT_PARAMS = deepFreeze({
   /** Every event is announced at least this long before. MAP 3.3 rule 1. */
   WARN_S: 1,
 
-  // bump (MAP 3.3 event 1; R4 1.9)
+  // bump (MAP 3.3 event 1; R4 1.9): pinning x0.6 everywhere for 0.3 s (MAP 3.2)
   BUMP_MUL: 0.6,
   BUMP_S: 0.3,
-  /** Drops smaller than this hop 2-7 mm on a bump, uL. MAP 3.3 ("le piccole saltano di 2-7 mm"). Threshold: CHOICE. */
-  BUMP_HOP_VMAX: 1.5,
-  BUMP_HOP_MIN: 2,
-  BUMP_HOP_MAX: 7,
+  /** ... plus the pothole's vertical push: gravity x (1 + BUMP_G_EXTRA) for the same 0.3 s. Inertia grows with a^3
+   *  and pinning only with a, so big drops slip down and small ones stay (they tremble 1 px in the renderer, MAP 3.3
+   *  rule 2). Replaces the 2-7 mm hop of small drops, which teleported about 170 droplets in one frame (physics
+   *  review; D025, a deviation from MAP 3.3 event 1 listed for Antonio). Value: CHOICE. */
+  BUMP_G_EXTRA: 1,
 
   // braking (MAP 3.3 event 2: to 20 km/h or a stop for 2-8 s)
   BRAKE_KMH: 20,
@@ -258,12 +271,16 @@ export const DEFAULT_PARAMS = deepFreeze({
   DOWNPOUR_S: 6,
   DOWNPOUR_WARN_S: 1.5,
 
-  // clearing / sun break (MAP 3.3 event 12: 6-10 s, small drops evaporate; R4 3.5 dV/dt = -c/a)
+  // clearing / sun break (MAP 3.3 event 12: 6-10 s, small drops evaporate)
   CLEAR_MIN_S: 6,
   CLEAR_MAX_S: 10,
   CLEAR_WARN_S: 2,
-  /** Evaporation constant c in dV/dt = -c / a, uL mm / s. CHOICE (a 0.3 uL droplet lasts about 2 s, a candidate loses about 10%). */
-  EVAP_C: 0.12,
+  /** Evaporation dV/dt = -EVAP_C a, uL/(mm s): a pinned drop evaporates in proportion to its contact radius
+   *  (diffusion-limited; Hu and Larson, J. Phys. Chem. B 106, 1334, 2002, as cited by the physics review).
+   *  Supersedes R4 3.5's -c/a, which had no physics source and emptied half the glass in 2 s (D025). Speed: about
+   *  300 times real, like the rest of the race. Value: CHOICE, tuned with `npm run physics` (small drops: 3% gone
+   *  after 1 s, 9% after 3 s, about 47% after 6 s; candidates lose about 13%). */
+  EVAP_C: 0.04,
   /** Drops below this volume vanish, uL. CHOICE. */
   V_VANISH: 0.05,
 

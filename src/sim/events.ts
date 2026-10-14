@@ -2,12 +2,11 @@
 // told which drops were picked. Every event is a field modifier, a mass source or an obstacle, never a
 // per-drop script (R4 3.5), so "events never target a drop" is true by construction.
 
-import { roadShake } from './car.ts';
 import { candidateOut, killDrop } from './drops.ts';
-import { cosApprox, floor, round, sinApprox, TAU } from './fmath.ts';
+import { round } from './fmath.ts';
 import { L, logEvent } from './log.ts';
 import type { LightProfile, Params } from './params.ts';
-import { chance, hashFloat, int, next, range, type Stream } from './rng.ts';
+import { chance, int, next, range, type Stream } from './rng.ts';
 import {
   CR_FLY,
   CR_GONE,
@@ -212,14 +211,6 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
   return { events, creatures, lightning };
 }
 
-// 8 fixed unit directions for the bump hop (no trigonometry at run time)
-const HOP_DX = new Float64Array(8);
-const HOP_DY = new Float64Array(8);
-for (let i = 0; i < 8; i++) {
-  HOP_DX[i] = cosApprox((i * TAU) / 8);
-  HOP_DY[i] = sinApprox((i * TAU) / 8);
-}
-
 function landCreature(s: RaceState, ci: number, rt: number): void {
   const p = s.p;
   const c = s.creatures[ci];
@@ -286,8 +277,7 @@ export function updateEvents(s: RaceState, rt: number): void {
   s.fx.pinMul = 1;
   s.fx.rainMul = 1;
   s.fx.evap = 0;
-  if (s.car.kmh >= p.ROAD_MIN_KMH && roadShake(s.car.road, rt, round(p.ROAD_S * p.TICK_HZ)))
-    s.fx.pinMul *= p.ROAD_MUL;
+  s.fx.gMul = 1;
   const evs = s.events;
   for (let k = 0; k < evs.length; k++) {
     const e = evs[k];
@@ -299,12 +289,14 @@ export function updateEvents(s: RaceState, rt: number): void {
     if (e.phase === EV_WARNED && rt >= e.startTick) {
       e.phase = EV_ACTIVE;
       logEvent(s.log, s.tick, L.EVENT_START, k, 0, 0);
-      if (e.type === 'bump') bumpHop(s, rt);
       if (e.creature >= 0) landCreature(s, e.creature, rt);
     }
     if (e.phase !== EV_ACTIVE) continue;
-    if (e.type === 'bump') s.fx.pinMul *= p.BUMP_MUL;
-    else if (e.type === 'downpour') s.fx.rainMul *= p.DOWNPOUR_MUL;
+    if (e.type === 'bump') {
+      // the pothole: pinning drops everywhere and gravity pushes harder for 0.3 s (D025)
+      s.fx.pinMul *= p.BUMP_MUL;
+      s.fx.gMul += p.BUMP_G_EXTRA;
+    } else if (e.type === 'downpour') s.fx.rainMul *= p.DOWNPOUR_MUL;
     else if (e.type === 'clearing') s.fx.evap = 1;
     if (e.creature < 0 && rt >= e.endTick) {
       e.phase = EV_DONE;
@@ -341,26 +333,5 @@ export function updateEvents(s: RaceState, rt: number): void {
   // lightning (cosmetic)
   for (let i = 0; i < s.lightning.length; i++) {
     if (s.lightning[i] === rt) logEvent(s.log, s.tick, L.LIGHTNING, i, 0, 0);
-  }
-}
-
-/** Bump: small drops hop 2-7 mm in a direction from a counter hash (MAP 3.3 event 1). */
-function bumpHop(s: RaceState, rt: number): void {
-  const p = s.p;
-  const d = s.drops;
-  for (let i = 0; i < d.n; i++) {
-    if (!d.alive[i] || d.held[i] >= 0 || d.v[i] >= p.BUMP_HOP_VMAX) continue;
-    const u1 = hashFloat(s.hopSeed, d.id[i], rt);
-    const u2 = hashFloat(s.hopSeed + 1, d.id[i], rt);
-    const dist = p.BUMP_HOP_MIN + (p.BUMP_HOP_MAX - p.BUMP_HOP_MIN) * u1;
-    const dir = floor(u2 * 8) & 7;
-    let nx = d.x[i] + HOP_DX[dir] * dist;
-    let ny = d.y[i] + HOP_DY[dir] * dist;
-    if (nx < d.a[i]) nx = d.a[i];
-    if (ny < d.a[i]) ny = d.a[i];
-    if (nx > p.W) nx = p.W;
-    if (ny > p.H) ny = p.H;
-    d.x[i] = nx;
-    d.y[i] = ny;
   }
 }

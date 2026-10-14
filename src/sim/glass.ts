@@ -282,6 +282,19 @@ export function buildGlass(
   const py: number[] = [];
   // glass.genRetries counts full-spacing failures: the map asks for fewer than 1 glass in 20 to need the fallback
   let spacing = p.CAND_SPACING;
+  // clear glass around a start spot (D025): no speck or smudge within the biggest drop's radius + CAND_CLEAN_R
+  const aMax = cbrt(p.MONSTER_V_MAX / p.CAP_K, 2.5);
+  const dirtFree = (x: number, y: number): boolean => {
+    for (const list of [glass.specks, glass.smudges]) {
+      for (let k = 0; k + 2 < list.length; k += 3) {
+        const dx = list[k] - x;
+        const dy = list[k + 1] - y;
+        const rr = list[k + 2] + aMax + p.CAND_CLEAN_R;
+        if (dx * dx + dy * dy < rr * rr) return false;
+      }
+    }
+    return true;
+  };
   for (let attempt = 0; attempt < 400 && px.length < n; attempt++) {
     if (attempt > 0 && attempt % 40 === 0) {
       glass.genRetries++;
@@ -305,6 +318,7 @@ export function buildGlass(
         const rr = glass.stickers[2] + 6;
         if (dx * dx + dy * dy < rr * rr) clear = false;
       }
+      if (clear && !dirtFree(x, y)) clear = false;
       if (clear) {
         px.push(x);
         py.push(y);
@@ -441,13 +455,15 @@ export function buildGlass(
       if (isLane) laneDone = true;
     }
     if (c.feederX >= 0) {
+      // the feeder's streak stops 1.5a + 1 mm before the outsider: the outsider itself sits on dry glass, so it
+      // does not start first because of the streak (physics review: it started first in 60% of glasses)
       const dx = c.x - c.feederX;
       wetStreak(
         glass,
         p,
         c.feederX,
         c.feederY,
-        c.x,
+        c.x - 1.5 * a - 1,
         (c.y - c.feederY) / (dx > 0.1 ? dx : 0.1),
         0.8,
         streakSeed + 200 + i,
@@ -455,6 +471,34 @@ export function buildGlass(
     }
   }
   glass.wetDecay = 1;
+  // under each candidate the glass is uniform (D025): flat pin noise within a + CAND_CLEAN_R, and no old wet
+  // streak under it, except the middle drop, whose streak starts at its front edge on purpose (MAP 3.1)
+  for (let i = 0; i < specs.length; i++) {
+    const c = specs[i];
+    const a = cbrt(c.v / p.CAP_K, 1.6);
+    const r = a + p.CAND_CLEAN_R;
+    for (let y = max(0, floor(c.y - r)); y <= min(ph - 1, floor(c.y + r)); y++) {
+      for (let x = max(0, floor(c.x - r)); x <= min(pw - 1, floor(c.x + r)); x++) {
+        const dx = x + 0.5 - c.x;
+        const dy = y + 0.5 - c.y;
+        if (dx * dx + dy * dy <= r * r) glass.pin[y * pw + x] = 1;
+      }
+    }
+    if (c.profile === PROFILE_MIDDLE) continue;
+    const cell = p.WET_CELL;
+    const rw = a + 1;
+    for (let yi = max(0, floor((c.y - rw) / cell)); yi <= min(glass.wh - 1, floor((c.y + rw) / cell)); yi++) {
+      for (
+        let xi = max(0, floor((c.x - rw) / cell));
+        xi <= min(glass.ww - 1, floor((c.x + rw) / cell));
+        xi++
+      ) {
+        const dx = (xi + 0.5) * cell - c.x;
+        const dy = (yi + 0.5) * cell - c.y;
+        if (dx * dx + dy * dy <= rw * rw) glass.wet[yi * glass.ww + xi] = 0;
+      }
+    }
+  }
 
   // 6. shuffle so the candidate index never reveals the profile
   for (let i = specs.length - 1; i > 0; i--) {

@@ -19,7 +19,8 @@
     "size": "size-limit",
     "check:deps": "node scripts/check-lock-age.ts",
     "hooks:install": "git config core.hooksPath .githooks",
-    "check": "npm run lint && npm run test && npm run build && npm run size"
+    "check": "npm run lint && npm run test && npm run build && npm run size",
+    "physics": "node tools/sim/physics.ts"
   },
   "dependencies": {
     "three": "0.186.1"

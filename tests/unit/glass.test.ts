@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { pinAt, wetIndex } from '../../src/sim/glass.ts';
 import { createRace } from '../../src/sim/race.ts';
-import { PROFILE_MONSTER } from '../../src/sim/state.ts';
+import { PROFILE_MIDDLE, PROFILE_MONSTER } from '../../src/sim/state.ts';
 
 describe('glass generation (MAP 3.1)', () => {
   it('every glass has 6 candidates inside the start box, with candidate volumes and full spacing', () => {
@@ -56,5 +57,29 @@ describe('glass generation (MAP 3.1)', () => {
     const kinds = new Set<string>();
     for (let i = 0; i < 60; i++) kinds.add(createRace(`kinds-${i}`).glass.kind);
     expect([...kinds].sort()).toEqual(['drizzle', 'lane', 'monster', 'twins']);
+  });
+  it('start spots are clean: no dirt nearby, flat glass, no old streak under them, feeder streak stops short', () => {
+    for (let i = 0; i < 80; i++) {
+      const s = createRace(`clean-${i}`);
+      const g = s.glass;
+      const p = s.p;
+      const aMax = Math.cbrt(p.MONSTER_V_MAX / p.CAP_K);
+      for (let c = 0; c < 6; c++) {
+        const x = s.cands.startX[c];
+        const y = s.cands.startY[c];
+        for (const list of [g.specks, g.smudges])
+          for (let k = 0; k < list.length; k += 3)
+            expect(Math.hypot(list[k] - x, list[k + 1] - y)).toBeGreaterThanOrEqual(
+              list[k + 2] + aMax + p.CAND_CLEAN_R - 1e-9,
+            );
+        expect(pinAt(g, x, y)).toBe(1);
+        const a = Math.cbrt(s.cands.startV[c] / p.CAP_K);
+        if (s.cands.profile[c] !== PROFILE_MIDDLE) {
+          expect(g.wet[wetIndex(g, p.WET_CELL, x, y)]).toBe(0);
+          // the outsider's own front edge is dry too
+          expect(g.wet[wetIndex(g, p.WET_CELL, x + a, y)]).toBe(0);
+        }
+      }
+    }
   });
 });
