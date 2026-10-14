@@ -193,10 +193,32 @@ export interface Candidates {
   hasFeeder: Uint8Array;
 }
 
+export const FF_NONE = 0;
+export const FF_DECIDED = 1;
+export const FF_OUT = 2;
+export const FF_GAP = 3;
+export const FF_REASONS = ['none', 'decided', 'out', 'gap'] as const;
+
 export interface Director {
   emaVx: Float64Array;
+  /** near-term arrival forecast (smoothed speed), used for the breath and slow motion near the line */
   eta: Float64Array;
   predictedGap: number;
+  /** x of each picked drop over the last FF_WINDOW_S of car-moving time: ring buffer, side-major */
+  xHist: Float64Array;
+  histHead: number;
+  histCount: number;
+  /** conservative gap for fast-forward: the leader at its slower pace, the trailer at its faster pace */
+  safeGap: number;
+  /** side predicted to lose when fast-forward latched on the gap (PLAYER / RIVAL), 0 none */
+  ffTrailer: number;
+  /** side the conservative forecast currently puts behind */
+  ffTrailerNow: number;
+  /** fast-forward currently on, and why (FF_*) */
+  ffOn: number;
+  ffReason: number;
+  ffUnlatches: number;
+  ffGapTick: number;
   /** +1 player ahead, -1 rival ahead, 0 unknown */
   lead: number;
   leadSwaps: number;

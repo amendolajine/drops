@@ -318,12 +318,19 @@ export const DEFAULT_PARAMS = deepFreeze({
   RIVAL_RANDOM_KNOCK: 0.05,
 
   // ---------- director (MAP 2.1) ----------
-  /** Fast-forward when the predicted gap stays above 6 s. MAP 2.1. */
+  /** Fast-forward when the predicted gap stays above 6 s. MAP 2.1. The prediction is conservative (D023): the
+   *  leader at the slower of its last-5-s and since-green speeds, the trailer at the faster of the two. */
   FF_GAP_S: 6,
-  /** ... for this long before it latches, s. CHOICE (the prediction is noisy). */
+  /** ... for this long before it latches, s. CHOICE, deviation from MAP 2.1 listed for Antonio (D023). */
   FF_HOLD_S: 2,
-  /** ... and only once the leader has done this share of the path. CHOICE. */
+  /** ... and only once the leader has done this share of the path. CHOICE, deviation listed (D023). */
   FF_MIN_PROGRESS: 0.5,
+  /** Speed window of the conservative forecast, s. CHOICE (a drop stops for 0.5-3 s at a time). */
+  FF_WINDOW_S: 5,
+  /** The forecast is frozen while the car is slower than this (every drop waits at a stop), km/h. CHOICE. */
+  FF_MIN_KMH: 30,
+  /** A gap fast-forward ends when the conservative gap falls under this: the race got close again, s. CHOICE. */
+  FF_UNLATCH_GAP_S: 2,
   /** Fast-forward when a picked drop goes out before 70% of the path. MAP 2.1. */
   FF_OUT_PROGRESS: 0.7,
   /** Slow motion when the predicted gap is under 1 s at the finish. MAP 2.1. */

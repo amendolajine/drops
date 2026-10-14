@@ -39,6 +39,7 @@ export const L = {
   BLOCKED: 33,
   RIVAL_NOTICE: 34,
   SWALLOW_CAND: 35,
+  FF_OFF: 36,
 } as const;
 
 export function logEvent(log: Log, tick: number, code: number, a: number, b: number, c: number): void {

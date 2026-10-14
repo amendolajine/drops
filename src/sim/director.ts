@@ -3,8 +3,10 @@
 // - first picked drop over the rear seal wins; gulp: the bigger drop wins, within 5% it is a draw
 // - both picked drops out: "nobody wins" (draw); one out: the other must still finish (or lead at 90 s)
 // - hard end at 90 s: the picked drop nearest the finish wins
-// - fast-forward when the race is decided, slow motion when the predicted gap is under 1 s at the line,
-//   a "breath" for the music under 1.5 s; knocks lock in the final straight (85% of the path)
+// - fast-forward when the race is decided, when a picked drop goes out before 70% of its path, or when the
+//   conservative forecast says the gap stays above 6 s (D023); slow motion when the predicted gap is under 1 s
+//   at the line, a "breath" for the music under 1.5 s, never during fast-forward; knocks lock in the final
+//   straight (85% of the path)
 
 import { round } from './fmath.ts';
 import { L, logEvent } from './log.ts';
@@ -13,6 +15,10 @@ import {
   CAND_OUT,
   CAND_RACING,
   DRAW,
+  FF_DECIDED,
+  FF_GAP,
+  FF_NONE,
+  FF_OUT,
   PHASE_DONE,
   PLAYER,
   R_BOTH_OUT,
@@ -57,6 +63,25 @@ export function progressOf(s: RaceState, c: number): number {
   const span = s.p.FINISH_X - k.startX[c];
   const pr = span > 0 ? (x - k.startX[c]) / span : 1;
   return pr < 0 ? 0 : pr > 1 ? 1 : pr;
+}
+
+function maxOf3(a: number, b: number, c: number): number {
+  const m = a > b ? a : b;
+  return m > c ? m : c;
+}
+
+function latchFastForward(s: RaceState, why: number, rt: number): void {
+  const dir = s.director;
+  dir.ffOn = 1;
+  dir.ffReason = why;
+  if (dir.fastForwardTick < 0) dir.fastForwardTick = rt;
+  if (why === FF_GAP) {
+    if (dir.ffGapTick < 0) {
+      dir.ffGapTick = rt;
+      dir.ffTrailer = dir.ffTrailerNow;
+    }
+  }
+  logEvent(s.log, s.tick, L.FAST_FORWARD, why, dir.safeGap, 0);
 }
 
 function end(s: RaceState): void {
@@ -127,7 +152,8 @@ export function directorUpdate(s: RaceState): void {
     logEvent(s.log, s.tick, L.FINAL_STRAIGHT, 0, 0, 0);
   }
 
-  // 3. arrival forecast from a smoothed speed (MAP 9.3 rule 5: computed inside the sim)
+  // 3a. near-term arrival forecast from a smoothed speed: breath and slow motion near the line
+  //     (MAP 9.3 rule 5: computed inside the sim)
   const alpha = s.dt / p.ETA_TAU_S;
   for (let side = PLAYER; side <= RIVAL; side++) {
     const c = side === PLAYER ? pp : pr;
@@ -145,29 +171,90 @@ export function directorUpdate(s: RaceState): void {
   dir.predictedGap = bothRacing ? (gap < 0 ? -gap : gap) : -1;
   const soon = dir.eta[PLAYER] < dir.eta[RIVAL] ? dir.eta[PLAYER] : dir.eta[RIVAL];
 
-  // 4. staging flags (presentation only; latched once set)
-  if (dir.fastForwardTick < 0) {
-    let ff = false;
-    if (s.result.reason !== 0) ff = true;
-    if (
-      (stP === CAND_OUT && k.outTick[pp] >= 0 && progP < p.FF_OUT_PROGRESS) ||
+  // 3b. conservative forecast for fast-forward (D023). Each drop gets two speeds: over the last FF_WINDOW_S
+  //     of car-moving time, and since the green light. The leader is assumed to go at the slower one, the
+  //     trailer at the faster one, so a drop that is only paused is not written off. Frozen while the car is
+  //     slow: at a stop every drop waits.
+  const carMoving = s.car.kmh >= p.FF_MIN_KMH;
+  if (!bothRacing) dir.safeGap = -1;
+  else if (carMoving) {
+    const n = dir.xHist.length >> 1;
+    const xP = d.x[k.slot[pp]];
+    const xR = d.x[k.slot[pr]];
+    const full = dir.histCount >= n;
+    const oldest = full ? dir.histHead : 0;
+    const span = (full ? n : dir.histCount) * s.dt;
+    const tRace = rt * s.dt;
+    if (span >= 1 && tRace > 0) {
+      const winP = (xP - dir.xHist[oldest]) / span;
+      const winR = (xR - dir.xHist[n + oldest]) / span;
+      const avgP = (xP - k.startX[pp]) / tRace;
+      const avgR = (xR - k.startX[pr]) / tRace;
+      const fastP = maxOf3(winP, avgP, 0.3);
+      const fastR = maxOf3(winR, avgR, 0.3);
+      const slowP = maxOf3(winP < avgP ? winP : avgP, 0.3, 0.3);
+      const slowR = maxOf3(winR < avgR ? winR : avgR, 0.3, 0.3);
+      const distP = p.FINISH_X - xP;
+      const distR = p.FINISH_X - xR;
+      const lagR = distR / fastR - distP / slowP; // rival behind by at least this
+      const lagP = distP / fastP - distR / slowR; // player behind by at least this
+      dir.safeGap = lagR > lagP ? lagR : lagP;
+      dir.ffTrailerNow = lagR > lagP ? RIVAL : PLAYER;
+    }
+    dir.xHist[dir.histHead] = xP;
+    dir.xHist[n + dir.histHead] = xR;
+    dir.histHead = (dir.histHead + 1) % n;
+    if (!full) dir.histCount++;
+  }
+
+  // 4. staging flags (presentation only). Decided result or an early out: fast-forward to the end.
+  //    A gap fast-forward ends again if the race closes up; breath and slow motion never run during
+  //    fast-forward (MAP 2.1 "se la corsa e gia decisa, niente respiro").
+  if (!dir.ffOn || dir.ffReason === FF_GAP) {
+    let why = FF_NONE;
+    if (s.result.reason !== 0) why = FF_DECIDED;
+    else if (
+      (stP === CAND_OUT && progP < p.FF_OUT_PROGRESS) ||
       (stR === CAND_OUT && progR < p.FF_OUT_PROGRESS)
     )
-      ff = true;
-    if (bothRacing && dir.predictedGap > p.FF_GAP_S && lead >= p.FF_MIN_PROGRESS) {
-      dir.ffHold++;
-      if (dir.ffHold >= p.FF_HOLD_S * p.TICK_HZ) ff = true;
-    } else dir.ffHold = 0;
-    if (ff) {
-      dir.fastForwardTick = rt;
-      logEvent(s.log, s.tick, L.FAST_FORWARD, 0, 0, 0);
-    }
+      why = FF_OUT;
+    if (why !== FF_NONE) latchFastForward(s, why, rt);
   }
-  if (bothRacing && dir.breathTick < 0 && soon < p.BREATH_GAP_S && dir.predictedGap < p.BREATH_GAP_S) {
+  if (!dir.ffOn) {
+    if (bothRacing && dir.safeGap > p.FF_GAP_S && lead >= p.FF_MIN_PROGRESS) {
+      if (carMoving) dir.ffHold++;
+      if (dir.ffHold >= p.FF_HOLD_S * p.TICK_HZ) latchFastForward(s, FF_GAP, rt);
+    } else if (carMoving || !bothRacing) dir.ffHold = 0;
+  } else if (
+    dir.ffReason === FF_GAP &&
+    bothRacing &&
+    carMoving &&
+    dir.safeGap >= 0 &&
+    dir.safeGap < p.FF_UNLATCH_GAP_S
+  ) {
+    dir.ffOn = 0;
+    dir.ffReason = FF_NONE;
+    dir.ffHold = 0;
+    dir.ffUnlatches++;
+    logEvent(s.log, s.tick, L.FF_OFF, dir.safeGap, 0, 0);
+  }
+  if (
+    bothRacing &&
+    !dir.ffOn &&
+    dir.breathTick < 0 &&
+    soon < p.BREATH_GAP_S &&
+    dir.predictedGap < p.BREATH_GAP_S
+  ) {
     dir.breathTick = rt;
     logEvent(s.log, s.tick, L.BREATH, dir.predictedGap, 0, 0);
   }
-  if (bothRacing && dir.slowMoTick < 0 && soon < p.SLOWMO_GAP_S && dir.predictedGap < p.SLOWMO_GAP_S) {
+  if (
+    bothRacing &&
+    !dir.ffOn &&
+    dir.slowMoTick < 0 &&
+    soon < p.SLOWMO_GAP_S &&
+    dir.predictedGap < p.SLOWMO_GAP_S
+  ) {
     dir.slowMoTick = rt;
     logEvent(s.log, s.tick, L.SLOWMO, dir.predictedGap, 0, 0);
   }

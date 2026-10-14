@@ -12,6 +12,7 @@ import {
   CR_LANDED,
   CREATURE_KINDS,
   EVENT_PHASES,
+  FF_REASONS,
   OUT_REASONS,
   PHASES,
   PLAYER,
@@ -173,7 +174,7 @@ export function snapshot(s: RaceState, logLines = 20): Snapshot {
       .map((c) => ({ kind: CREATURE_KINDS[c.kind], x: c.x, y: c.y, r: c.r, landed: c.state === CR_LANDED })),
     stickers,
     director: {
-      fastForward: s.director.fastForwardTick >= 0,
+      fastForward: s.director.ffOn === 1,
       slowMo: s.director.slowMoTick >= 0,
       breath: s.director.breathTick >= 0,
       predictedGap: s.director.predictedGap,
@@ -268,7 +269,9 @@ export function describe(s: RaceState, code: number, a: number, b: number, c: nu
     case L.LEAD_SWAP:
       return `lead swap: ${side(a)} ahead (${fmt(b * 100, 0)}% of the path)`;
     case L.FAST_FORWARD:
-      return 'race decided: fast-forward';
+      return `fast-forward (${FF_REASONS[a] ?? '?'}${a === 3 ? `, safe gap ${fmt(b, 1)} s` : ''})`;
+    case L.FF_OFF:
+      return `fast-forward off: the race got close again (safe gap ${fmt(a, 1)} s)`;
     case L.SLOWMO:
       return `photo finish coming: slow motion (gap ${fmt(a, 2)} s)`;
     case L.BREATH:
