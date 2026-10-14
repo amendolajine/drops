@@ -7,7 +7,7 @@ import { candidateOut, killDrop } from './drops.ts';
 import { cosApprox, floor, round, sinApprox, TAU } from './fmath.ts';
 import { L, logEvent } from './log.ts';
 import type { LightProfile, Params } from './params.ts';
-import { chance, hashFloat, int, range, type Stream } from './rng.ts';
+import { chance, hashFloat, int, next, range, type Stream } from './rng.ts';
 import {
   CR_FLY,
   CR_GONE,
@@ -77,6 +77,20 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
   if (chance(ev, lp.leaf)) wanted.push('leaf');
   if (chance(ev, lp.downpour)) wanted.push('downpour');
   if (chance(ev, lp.clearing)) wanted.push('clearing');
+  // MAP 3.3 "da 1 a 3": a race never goes without an event. Pick one with the light's own weights.
+  if (wanted.length === 0) {
+    const w = [lp.bump, lp.brake, lp.leaf, lp.downpour, lp.clearing];
+    const names: EventType[] = ['bump', 'brake', 'leaf', 'downpour', 'clearing'];
+    let total = 0;
+    for (let i = 0; i < w.length; i++) total += w[i];
+    let u = next(ev) * total;
+    let k = 0;
+    while (k < w.length - 1 && u >= w[k]) {
+      u -= w[k];
+      k++;
+    }
+    wanted.push(names[k]);
+  }
   // shuffle so no type is always first
   for (let i = wanted.length - 1; i > 0; i--) {
     const j = int(ev, i + 1);
@@ -138,9 +152,13 @@ export function buildSchedule(p: Params, lp: LightProfile, ev: Stream): Schedule
       e.kmh = chance(ev, p.BRAKE_STOP_CHANCE) ? 0 : p.BRAKE_KMH;
       e.endTick = sec(p, t0 + p.BRAKE_DOWN_S + hold + p.BRAKE_UP_S);
       events.push(e);
-      // a fly may come while the car is slow (it lands only under FLY_MAX_KMH)
-      if (chance(ev, lp.flyGivenBrake)) {
-        const land = t0 + p.BRAKE_DOWN_S + range(ev, 0.3, hold > 0.8 ? hold - 0.5 : 0.3);
+      // a fly may come while the car is slow (it lands only under FLY_MAX_KMH). It belongs to this braking's
+      // slot (D024) and, like every event, never lands after the cutoff (MAP 3.3).
+      const earliest = t0 + p.BRAKE_DOWN_S + 0.3;
+      const latestByBrake = t0 + p.BRAKE_DOWN_S + (hold > 0.8 ? hold - 0.5 : 0.3);
+      const latest = latestByBrake < p.EVENT_CUTOFF_S ? latestByBrake : p.EVENT_CUTOFF_S;
+      if (chance(ev, lp.flyGivenBrake) && latest >= earliest) {
+        const land = range(ev, earliest, latest);
         const life = range(ev, p.FLY_LIFE_MIN, p.FLY_LIFE_MAX);
         const fx = packX(p, land, range(ev, -1, 1));
         const fy = range(ev, p.PACK_Y_MIN, p.PACK_Y_MAX);

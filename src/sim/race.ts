@@ -67,6 +67,12 @@ export interface StepInput {
   knocks?: readonly KnockInput[];
 }
 
+/** The text every stream of a race is seeded from (glass side), and the one for weather/events/rival. */
+export function seedKeys(seed: string | number, variant = ''): { key: string; dyn: string } {
+  const key = `drops|sim${SIM_VERSION}|${String(seed)}`;
+  return { key, dyn: variant === '' ? key : `${key}|variant:${variant}` };
+}
+
 export function createRace(seed: string | number, options: RaceOptions = {}): RaceState {
   const overrides = options.params ?? {};
   for (const name of Object.keys(overrides))
@@ -76,9 +82,8 @@ export function createRace(seed: string | number, options: RaceOptions = {}): Ra
   // own keys only: "__proto__" or "constructor" must not pass as a light (engineering review)
   if (!Object.hasOwn(LIGHTS, light)) throw new Error(`createRace: unknown light "${String(light)}"`);
   const seedText = String(seed);
-  const key = `drops|sim${SIM_VERSION}|${seedText}`;
   const variant = options.variant ?? '';
-  const dyn = variant === '' ? key : `${key}|variant:${variant}`;
+  const { key, dyn } = seedKeys(seed, variant);
   const streams = {
     glass: makeStream(key, 'glass'),
     candidates: makeStream(key, 'candidates'),

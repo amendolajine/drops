@@ -364,36 +364,39 @@ export interface LightProfile {
 
 export const LIGHTS: Readonly<Record<Light, Readonly<LightProfile>>> = deepFreeze({
   // Grey drive: provincial road, drizzle. MAP 3.3 (bump 25-50%, braking 35% in town, leaf 10-15%).
+  // TUNING 2026-10-14 (D024): brake 0.45 -> 0.55, leaf 0.3 -> 0.35, downpour 0.2 -> 0.25, clearing 0.15 -> 0.2,
+  // so a race has about 2 event slots on average (MAP 3.3) now that a fly no longer counts on its own.
   grey: {
     rainPerS: 8,
     bump: 0.55,
-    brake: 0.45,
+    brake: 0.55,
     flyGivenBrake: 1,
-    leaf: 0.3,
-    downpour: 0.2,
-    clearing: 0.15,
+    leaf: 0.35,
+    downpour: 0.25,
+    clearing: 0.2,
     lightning: 0,
   },
-  // Sunset after the storm: clearing 50%. MAP 3.3 event 12.
+  // Sunset after the storm: clearing 50%. MAP 3.3 event 12. TUNING (D024): brake 0.45 -> 0.5, leaf 0.3 -> 0.35.
   sunset: {
     rainPerS: 5,
     bump: 0.5,
-    brake: 0.45,
+    brake: 0.5,
     flyGivenBrake: 0.6,
-    leaf: 0.3,
+    leaf: 0.35,
     downpour: 0.1,
     clearing: 0.5,
     lightning: 0,
   },
-  // Night storm: downpour 30%, lightning 40%. MAP 3.3 events 11, 13.
+  // Night storm: downpour 30%, lightning 40%. MAP 3.3 events 11, 13. TUNING (D024): bump 0.5 -> 0.55,
+  // brake 0.45 -> 0.5, leaf 0.2 -> 0.3, downpour 0.35 -> 0.45, clearing 0.05 -> 0.1.
   storm: {
     rainPerS: 12,
-    bump: 0.5,
-    brake: 0.45,
+    bump: 0.55,
+    brake: 0.5,
     flyGivenBrake: 0.3,
-    leaf: 0.2,
-    downpour: 0.35,
-    clearing: 0.05,
+    leaf: 0.3,
+    downpour: 0.45,
+    clearing: 0.1,
     lightning: 0.4,
   },
 });

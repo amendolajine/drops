@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { carKmhAt } from '../../src/sim/car.ts';
-import { createRace, pick, step } from '../../src/sim/race.ts';
+import { buildSchedule } from '../../src/sim/events.ts';
+import { DEFAULT_PARAMS, LIGHTS, type Light } from '../../src/sim/params.ts';
+import { createRace, pick, seedKeys, step } from '../../src/sim/race.ts';
+import { makeStream } from '../../src/sim/rng.ts';
 import { CR_LANDED, PHASE_DONE } from '../../src/sim/state.ts';
 
 describe('event schedule (MAP 3.3)', () => {
@@ -16,29 +19,42 @@ describe('event schedule (MAP 3.3)', () => {
       expect(JSON.stringify(a.creatures)).toBe(JSON.stringify(b.creatures));
     }
   });
-  it('respects quiet start, cutoff, 6 s spacing and the maximum of 4; mean about 2 per race', () => {
-    let total = 0;
-    const N = 1000;
-    for (let i = 0; i < N; i++) {
-      const s = createRace(`sched-${i}`);
-      const p = s.p;
-      const slots = s.events.filter((e) => e.type !== 'fly');
-      expect(slots.length).toBeLessThanOrEqual(p.EVENT_MAX);
-      total += s.events.length;
-      for (const e of slots) {
-        expect(e.startTick).toBeGreaterThanOrEqual(p.EVENT_QUIET_S * 60);
-        expect(e.startTick).toBeLessThanOrEqual(p.EVENT_CUTOFF_S * 60);
-        expect(e.startTick - e.warnTick).toBeGreaterThanOrEqual(p.WARN_S * 60);
+  it('slots: 1 to 4 per race, quiet start, cutoff, 6 s spacing; mean about 2 in every light (MAP 3.3, D024)', () => {
+    const N = 3000;
+    for (const light of ['grey', 'sunset', 'storm'] as Light[]) {
+      let total = 0;
+      for (let i = 0; i < N; i++) {
+        const p = { ...DEFAULT_PARAMS };
+        const sc = buildSchedule(p, LIGHTS[light], makeStream(seedKeys(`sched-${i}`).dyn, 'events'));
+        // a fly belongs to its braking's slot (D024); every other event is a slot of its own
+        const slots = sc.events.filter((e) => e.type !== 'fly');
+        expect(slots.length).toBeGreaterThanOrEqual(1);
+        expect(slots.length).toBeLessThanOrEqual(p.EVENT_MAX);
+        total += slots.length;
+        for (const e of slots) {
+          expect(e.startTick).toBeGreaterThanOrEqual(p.EVENT_QUIET_S * 60);
+          expect(e.startTick).toBeLessThanOrEqual(p.EVENT_CUTOFF_S * 60);
+          expect(e.startTick - e.warnTick).toBeGreaterThanOrEqual(p.WARN_S * 60);
+        }
+        for (let a = 0; a < slots.length; a++)
+          for (let b = a + 1; b < slots.length; b++)
+            expect(Math.abs(slots[a].startTick - slots[b].startTick)).toBeGreaterThanOrEqual(
+              p.EVENT_GAP_S * 60 - 1,
+            );
+        // a fly lands inside its braking's slow phase, never after the cutoff, and is announced 1 s before
+        for (const f of sc.events.filter((e) => e.type === 'fly')) {
+          const brake = sc.events[sc.creatures[f.creature].event - 1];
+          expect(brake.type).toBe('brake');
+          expect(f.startTick).toBeLessThanOrEqual(Math.round(p.EVENT_CUTOFF_S * 60));
+          expect(f.startTick).toBeGreaterThanOrEqual(brake.startTick + p.BRAKE_DOWN_S * 60);
+          expect(f.startTick).toBeLessThanOrEqual(brake.endTick - p.BRAKE_UP_S * 60);
+          expect(f.startTick - f.warnTick).toBe(p.WARN_S * 60);
+        }
       }
-      for (let a = 0; a < slots.length; a++)
-        for (let b = a + 1; b < slots.length; b++)
-          expect(Math.abs(slots[a].startTick - slots[b].startTick)).toBeGreaterThanOrEqual(
-            p.EVENT_GAP_S * 60 - 1,
-          );
+      const mean = total / N;
+      expect(mean).toBeGreaterThan(1.8);
+      expect(mean).toBeLessThan(2.2);
     }
-    const mean = total / N;
-    expect(mean).toBeGreaterThan(1.5);
-    expect(mean).toBeLessThan(2.5);
   });
   it('a fly lands only while the car is under 30 km/h, then may let go when the car speeds up', () => {
     let landed = 0;
