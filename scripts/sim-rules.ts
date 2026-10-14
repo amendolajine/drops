@@ -38,6 +38,15 @@ const BANNED_IDENTIFIERS: Record<string, string> = {
   Intl: 'locale-dependent',
   toLocaleString: 'locale-dependent',
   localeCompare: 'locale-dependent',
+  self: 'reaches the page or the worker',
+  Function: 'builds code at run time',
+  eval: 'builds code at run time',
+  WeakRef: 'depends on the garbage collector',
+  FinalizationRegistry: 'depends on the garbage collector',
+  SharedArrayBuffer: 'shared memory between threads',
+  Atomics: 'shared memory between threads',
+  fetch: 'network access',
+  require: 'loads code outside src/sim',
 };
 
 /** Replace comments and string contents with spaces (keeps line numbers and `${...}` code). */
@@ -123,20 +132,59 @@ export function stripCode(src: string): string {
   return out.join('');
 }
 
+/**
+ * Every import and re-export, including multi-line ones and bare `import './x.ts'`. Statements are found on
+ * the comment-free code (stripCode keeps every character offset), specifiers are read from the raw text.
+ */
+export function importsOf(src: string, code: string): { line: number; spec: string; dynamic: boolean }[] {
+  const out: { line: number; spec: string; dynamic: boolean }[] = [];
+  const lineAt = (i: number) => src.slice(0, i).split('\n').length;
+  const specAt = (q: number) => {
+    const quote = src[q];
+    const end = src.indexOf(quote, q + 1);
+    return end > q ? src.slice(q + 1, end) : '';
+  };
+  // import ... from '...' and export ... from '...' (any number of lines in between, no ; or = in between)
+  for (const m of code.matchAll(/\b(import|export)\b([^;='"`]*?)\bfrom\s*(['"])/g)) {
+    if (m[1] === 'export' && !/[{*]/.test(m[2])) continue;
+    const q = (m.index ?? 0) + m[0].length - 1;
+    out.push({ line: lineAt(m.index ?? 0), spec: specAt(q), dynamic: false });
+  }
+  // bare import './x.ts'
+  for (const m of code.matchAll(/\bimport\s*(['"])/g)) {
+    const q = (m.index ?? 0) + m[0].length - 1;
+    out.push({ line: lineAt(m.index ?? 0), spec: specAt(q), dynamic: false });
+  }
+  // import(...)
+  for (const m of code.matchAll(/\bimport\s*\(/g))
+    out.push({ line: lineAt(m.index ?? 0), spec: '', dynamic: true });
+  return out;
+}
+
+/** Only TypeScript source files may live in src/sim (a .js file would escape the type and lint rules). */
+export function checkSimFileName(fileName: string): Violation[] {
+  return /\.ts$/.test(fileName) && !/\.d\.ts$/.test(fileName)
+    ? []
+    : [{ line: 1, message: 'only .ts source files are allowed in src/sim (no .js, .mjs, .json, .d.ts)' }];
+}
+
 export function checkSimSource(fileName: string, src: string): Violation[] {
   const v: Violation[] = [];
   const isFmath = /(^|\/)fmath\.ts$/.test(fileName);
-  // import specifiers are checked on the raw text (they are strings)
-  const importRe =
-    /^\s*(?:import|export)\b[^'"\n]*?from\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)/gm;
-  for (const m of src.matchAll(importRe)) {
-    const spec = m[1] ?? m[2];
-    const line = src.slice(0, m.index).split('\n').length;
-    if (isFmath) v.push({ line, message: `fmath.ts must not import anything (found '${spec}')` });
-    else if (!/^\.\/[A-Za-z0-9_-]+\.ts$/.test(spec))
-      v.push({ line, message: `imports must be sibling files './name.ts' inside src/sim (found '${spec}')` });
-  }
   const code = stripCode(src);
+  for (const imp of importsOf(src, code)) {
+    if (imp.dynamic) {
+      v.push({ line: imp.line, message: 'dynamic import() is not allowed in the simulation (asynchronous)' });
+      continue;
+    }
+    if (isFmath)
+      v.push({ line: imp.line, message: `fmath.ts must not import anything (found '${imp.spec}')` });
+    else if (!/^\.\/[A-Za-z0-9_-]+\.ts$/.test(imp.spec))
+      v.push({
+        line: imp.line,
+        message: `imports must be sibling files './name.ts' inside src/sim (found '${imp.spec}')`,
+      });
+  }
   const lines = code.split('\n');
   lines.forEach((text, idx) => {
     const line = idx + 1;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkSimSource } from '../../scripts/sim-rules.ts';
+import { checkSimFileName, checkSimSource } from '../../scripts/sim-rules.ts';
 
 const msgs = (file: string, src: string) => checkSimSource(file, src).map((v) => v.message);
 
@@ -31,5 +31,37 @@ describe('check-sim: the determinism rules catch what they must', () => {
     ).toHaveLength(0);
     // biome-ignore lint/suspicious/noTemplateCurlyInString: the fixture is source text with a template expression
     expect(msgs('src/sim/x.ts', 'const s = `value ${Math.sin(1)}`;')).toHaveLength(1);
+  });
+  it('catches multi-line, bare and dynamic imports (engineering review probes)', () => {
+    expect(msgs('src/sim/x.ts', "import {\n  a,\n} from './zz_probe6.js';")).toHaveLength(1);
+    expect(msgs('src/sim/x.ts', "import {\n  log,\n} from '../debug/log.ts';")).toHaveLength(1);
+    expect(msgs('src/sim/x.ts', "import '../debug/main.ts';")).toHaveLength(1);
+    expect(msgs('src/sim/x.ts', "const m = await import('./fmath.ts');")).toHaveLength(1);
+    expect(msgs('src/sim/x.ts', "export {\n  a,\n} from '../other.ts';")).toHaveLength(1);
+    expect(
+      msgs('src/sim/x.ts', "import {\n  floor,\n  sqrt,\n} from './fmath.ts';\nexport { a } from './b.ts';"),
+    ).toHaveLength(0);
+    // a variable called "from" is not an import
+    expect(msgs('src/sim/x.ts', 'export const from = 1;')).toHaveLength(0);
+  });
+  it('bans code built at run time, garbage-collector hooks, threads and the network', () => {
+    for (const src of [
+      "const f = new Function('return 1');",
+      "eval('1');",
+      'const r = new WeakRef(o);',
+      'const g = new FinalizationRegistry(() => {});',
+      'const b = new SharedArrayBuffer(8);',
+      'Atomics.add(a, 0, 1);',
+      "fetch('x');",
+      'self.postMessage(1);',
+      "const m = require('x');",
+    ])
+      expect(msgs('src/sim/x.ts', src)).toHaveLength(1);
+  });
+  it('only .ts source files may live in src/sim', () => {
+    expect(checkSimFileName('src/sim/a.ts')).toHaveLength(0);
+    expect(checkSimFileName('src/sim/a.js')).toHaveLength(1);
+    expect(checkSimFileName('src/sim/a.d.ts')).toHaveLength(1);
+    expect(checkSimFileName('src/sim/data.json')).toHaveLength(1);
   });
 });

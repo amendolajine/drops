@@ -24,7 +24,7 @@
   "plugins": [{ "path": "./biome-plugins/no-exponent.grit", "includes": ["**/src/sim/**"] }],
   "overrides": [
     {
-      "includes": ["src/sim/**/*.ts", "!src/sim/fmath.ts"],
+      "includes": ["src/sim/**", "!src/sim/fmath.ts"],
       "linter": {
         "rules": {
           "style": {
@@ -46,7 +46,15 @@
                   "requestAnimationFrame": "Determinism: time in the simulation is the tick counter only.",
                   "queueMicrotask": "Determinism: the simulation is synchronous.",
                   "process": "The simulation has no access to the runtime.",
-                  "Intl": "Determinism: locale formatting differs between machines."
+                  "Intl": "Determinism: locale formatting differs between machines.",
+                  "Function": "The simulation never builds code at run time.",
+                  "eval": "The simulation never builds code at run time.",
+                  "WeakRef": "Determinism: garbage collection timing differs between engines.",
+                  "FinalizationRegistry": "Determinism: garbage collection timing differs between engines.",
+                  "SharedArrayBuffer": "The simulation is single-threaded.",
+                  "Atomics": "The simulation is single-threaded.",
+                  "fetch": "The simulation has no network access.",
+                  "require": "The simulation imports only its own files."
                 }
               }
             },
