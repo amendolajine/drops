@@ -5,23 +5,22 @@
 // when it has been stuck for more than 2 s, and 5% of his knocks land at a random spot.
 // His randomness comes from his own stream, so he behaves the same for everyone (MAP 9.3).
 
-import { floor, round } from './fmath.ts';
-import { pinAt } from './glass.ts';
+import { round } from './fmath.ts';
 import { applyKnock } from './knock.ts';
 import { L, logEvent } from './log.ts';
 import { chance, int, next, range } from './rng.ts';
 import { CAND_RACING, CR_LANDED, PHASE_RACING, PLAYER, type RaceState, RIVAL, raceTick } from './state.ts';
 
-/** True when the pin field within RIVAL_DIRT_R of (x, y) reaches RIVAL_DIRT_LEVEL (visible dirt). */
+/** True when a visible dirt speck or road smudge comes within RIVAL_DIRT_R of (x, y). Reads only what is
+ *  drawn on the glass (the specks and smudges lists), never the invisible noise of the pin field. */
 export function nearDirt(s: RaceState, x: number, y: number): boolean {
-  const p = s.p;
-  const r = p.RIVAL_DIRT_R;
-  for (let yy = floor(y - r); yy <= y + r; yy += 1) {
-    for (let xx = floor(x - r); xx <= x + r; xx += 1) {
-      const dx = xx + 0.5 - x;
-      const dy = yy + 0.5 - y;
-      if (dx * dx + dy * dy > r * r) continue;
-      if (pinAt(s.glass, xx + 0.5, yy + 0.5) >= p.RIVAL_DIRT_LEVEL) return true;
+  const r = s.p.RIVAL_DIRT_R;
+  for (const list of [s.glass.specks, s.glass.smudges]) {
+    for (let i = 0; i + 2 < list.length; i += 3) {
+      const dx = list[i] - x;
+      const dy = list[i + 1] - y;
+      const rr = r + list[i + 2];
+      if (dx * dx + dy * dy <= rr * rr) return true;
     }
   }
   return false;
@@ -80,7 +79,8 @@ export function rivalThink(s: RaceState): void {
   const x = d.x[slot];
   const y = d.y[slot];
   const st = s.streams.rival;
-  // a planned knock on a creature he noticed
+  // a planned knock on a creature he noticed. Afterwards he forgets it, so if it is still in his way he
+  // can notice it again and knock again: the pity rule works for him too (MAP 3.4 "stesse regole").
   if (m.knockTick >= 0 && rt >= m.knockTick) {
     const cr = s.creatures[m.noticed];
     m.knockTick = -1;
@@ -89,22 +89,29 @@ export function rivalThink(s: RaceState): void {
         applyKnock(s, RIVAL, range(st, 40, p.FINISH_X), range(st, 10, p.H - 10));
       else applyKnock(s, RIVAL, cr.x, cr.y);
     }
+    m.noticed = -1;
   }
-  // notice a creature ahead of his drop
-  if (m.knockTick < 0) {
+  // notice a creature ahead of his drop, or one holding it (a leaf over it)
+  if (m.knockTick < 0 && s.knocks.left[RIVAL] > 0 && !s.knocks.locked) {
     for (let ci = 0; ci < s.creatures.length; ci++) {
-      if (ci === m.noticed) continue;
+      if ((m.ignored >> ci) & 1) continue;
       const cr = s.creatures[ci];
       if (cr.state !== CR_LANDED) continue;
       const dx = cr.x - x;
       const dy = cr.y - y;
-      if (dx >= 0 && dx <= p.RIVAL_SEE_AHEAD && (dy < 0 ? -dy : dy) <= p.RIVAL_SEE_SIDE + cr.r) {
-        m.noticed = ci;
-        m.knockTick = rt + round(range(st, p.RIVAL_REACT_MIN, p.RIVAL_REACT_MAX) * p.TICK_HZ);
-        m.willKnock = chance(st, p.RIVAL_KNOCK_P) ? 1 : 0;
-        logEvent(s.log, s.tick, L.RIVAL_NOTICE, ci, m.willKnock, 0);
-        break;
+      const ahead = dx >= 0 && dx <= p.RIVAL_SEE_AHEAD && (dy < 0 ? -dy : dy) <= p.RIVAL_SEE_SIDE + cr.r;
+      if (!ahead && d.held[slot] !== ci) continue;
+      m.noticed = ci;
+      m.knockTick = rt + round(range(st, p.RIVAL_REACT_MIN, p.RIVAL_REACT_MAX) * p.TICK_HZ);
+      m.willKnock = chance(st, p.RIVAL_KNOCK_P) ? 1 : 0;
+      if (!m.willKnock) {
+        // he lets this one be for the rest of the race
+        m.ignored |= 1 << ci;
+        m.knockTick = -1;
+        m.noticed = -1;
       }
+      logEvent(s.log, s.tick, L.RIVAL_NOTICE, ci, m.willKnock, 0);
+      break;
     }
   }
   // jolt his own drop when it has been stuck too long (once per stuck spell)

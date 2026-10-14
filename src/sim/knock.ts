@@ -3,12 +3,14 @@
 // +20 points per failed knock on the same creature, the third knock on it always works (pity rule).
 // Use 2, jolt: only the nearest stuck drop within 10 mm gets its pinning halved for 0.25 s.
 // Every knock is rounded to 0.5 mm before it is applied, live or in a replay (MAP 9.3 rule 6).
+// Each scare roll is a counter hash of (creature, side, that side's attempt number on that creature), so a
+// knock by one side never shifts the dice of the other side (determinism review, D021).
 
 import { creatureGone } from './events.ts';
 import { clamp, round } from './fmath.ts';
 import { L, logEvent } from './log.ts';
-import { next } from './rng.ts';
-import { CR_FLY, CR_LANDED, PHASE_RACING, type RaceState, raceTick } from './state.ts';
+import { hashFloat } from './rng.ts';
+import { CR_FLY, CR_LANDED, PHASE_RACING, PLAYER, type RaceState, raceTick } from './state.ts';
 
 export function quantizeKnock(mm: number, q: number): number {
   return round(mm / q) * q;
@@ -59,7 +61,8 @@ export function applyKnock(s: RaceState, who: number, xIn: number, yIn: number):
     const c = s.creatures[best];
     const base = c.kind === CR_FLY ? p.SCARE_FLY : p.SCARE_LEAF;
     const sure = c.failedKnocks >= p.PITY_SURE_AFTER;
-    const roll = next(s.streams.knock);
+    const attempt = who === PLAYER ? c.triesPlayer++ : c.triesRival++;
+    const roll = hashFloat(s.knockSeed, best * 4 + who, attempt);
     if (sure || roll < base + p.PITY_STEP * c.failedKnocks) {
       logEvent(s.log, s.tick, L.SCARE_OK, who, best, c.failedKnocks);
       creatureGone(s, best, 1);

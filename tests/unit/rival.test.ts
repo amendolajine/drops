@@ -37,4 +37,15 @@ describe('the rival (MAP 3.5)', () => {
     expect(top / N).toBeGreaterThan(0.85);
     expect(top / N).toBeLessThan(0.97);
   });
+  it('sees only the visible dirt: his score does not change with the invisible pin noise (HET_AMP)', () => {
+    for (let i = 0; i < 40; i++) {
+      const a = createRace(`rd-${i}`);
+      const b = createRace(`rd-${i}`, { params: { HET_AMP: 0.05 } });
+      const c = createRace(`rd-${i}`, { params: { HET_AMP: 0.6 } });
+      for (let k = 0; k < 6; k++) {
+        expect(rivalScore(b, k)).toBe(rivalScore(a, k));
+        expect(rivalScore(c, k)).toBe(rivalScore(a, k));
+      }
+    }
+  });
 });

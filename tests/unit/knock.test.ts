@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { applyKnock, quantizeKnock } from '../../src/sim/knock.ts';
 import { createRace, pick, step } from '../../src/sim/race.ts';
-import { CR_FLY, CR_GONE, CR_LANDED, type Creature, PLAYER, type RaceState } from '../../src/sim/state.ts';
+import {
+  CR_FLY,
+  CR_GONE,
+  CR_LANDED,
+  type Creature,
+  PLAYER,
+  type RaceState,
+  RIVAL,
+} from '../../src/sim/state.ts';
 import { addDrop, bareRace } from './helpers.ts';
 
 function racing(): RaceState {
@@ -28,12 +36,21 @@ function fly(s: RaceState, x: number, y: number): number {
     releaseTick: -1,
     surfing: 0,
     goneWhy: 0,
+    triesPlayer: 0,
+    triesRival: 0,
   };
   s.events = [
     { type: 'fly', warnTick: 0, startTick: 0, endTick: 99999, x, y, kmh: 0, creature: 0, phase: 2 },
   ];
   s.creatures = [c];
   return 0;
+}
+
+function twoFlies(s: RaceState): void {
+  fly(s, 150, 60);
+  const second = { ...s.creatures[0], x: 60, y: 30, event: 1 };
+  s.events.push({ ...s.events[0], x: 60, y: 30, creature: 1 });
+  s.creatures.push(second);
 }
 
 describe('the knock (MAP 3.4)', () => {
@@ -99,5 +116,24 @@ describe('the knock (MAP 3.4)', () => {
     pick(s, 'player', 0);
     step(s, { knocks: [{ who: 'player', x: 120, y: 60 }] });
     expect(s.knocks.left[PLAYER]).toBe(2);
+  });
+  it('a player knock on another creature never changes the rival scare result (separate dice per side)', () => {
+    let flips = 0;
+    let scared = 0;
+    for (let i = 0; i < 200; i++) {
+      const runRival = (playerFirst: boolean) => {
+        const s = createRace(`indep-${i}`, { mode: 'race' });
+        pick(s, 'player', 0);
+        twoFlies(s);
+        if (playerFirst) applyKnock(s, PLAYER, 60, 30); // the other fly, 90 mm away
+        applyKnock(s, RIVAL, 150, 60);
+        return s.creatures[0].state;
+      };
+      const alone = runRival(false);
+      if (alone === CR_GONE) scared++;
+      if (runRival(true) !== alone) flips++;
+    }
+    expect(flips).toBe(0);
+    expect(scared).toBeGreaterThan(80); // the dice still roll: about 58% of first knocks scare a fly
   });
 });

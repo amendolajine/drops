@@ -68,8 +68,13 @@ export interface StepInput {
 }
 
 export function createRace(seed: string | number, options: RaceOptions = {}): RaceState {
-  const p: Params = { ...DEFAULT_PARAMS, ...(options.params ?? {}) };
+  const overrides = options.params ?? {};
+  for (const name of Object.keys(overrides))
+    if (!Object.hasOwn(DEFAULT_PARAMS, name)) throw new Error(`createRace: unknown parameter "${name}"`);
+  const p: Params = { ...DEFAULT_PARAMS, ...overrides };
   const light: Light = options.light ?? 'grey';
+  // own keys only: "__proto__" or "constructor" must not pass as a light (engineering review)
+  if (!Object.hasOwn(LIGHTS, light)) throw new Error(`createRace: unknown light "${String(light)}"`);
   const seedText = String(seed);
   const key = `drops|sim${SIM_VERSION}|${seedText}`;
   const variant = options.variant ?? '';
@@ -83,9 +88,9 @@ export function createRace(seed: string | number, options: RaceOptions = {}): Ra
     events: makeStream(dyn, 'events'),
     car: makeStream(dyn, 'car'),
     rival: makeStream(dyn, 'rival'),
-    knock: makeStream(dyn, 'knock'),
   };
-  const lp = LIGHTS[light];
+  // a private copy: the race never reads a table that other code could change (LIGHTS is frozen too)
+  const lp = { ...LIGHTS[light] };
   const build = buildGlass(p, streams.glass, streams.candidates, streams.ambient);
   build.glass.wetDecay = halfLifeFactor(0.5, p.WET_HALF_LIFE);
   const schedule = buildSchedule(p, lp, streams.events);
@@ -109,6 +114,7 @@ export function createRace(seed: string | number, options: RaceOptions = {}): Ra
     streams,
     pearlSeed: nextU32(makeStream(dyn, 'pearls')) | 0,
     hopSeed: nextU32(makeStream(dyn, 'hops')) | 0,
+    knockSeed: nextU32(makeStream(dyn, 'knock')) | 0,
     glass: build.glass,
     drops: newDrops(p.MAX_DROPS),
     gridHead: new Int32Array(gridW * gridH),
@@ -129,7 +135,7 @@ export function createRace(seed: string | number, options: RaceOptions = {}): Ra
     creatures: schedule.creatures,
     lightning: schedule.lightning,
     fx: { pinMul: 1, rainMul: 1, evap: 0 },
-    rival: { noticed: -1, knockTick: -1, willKnock: 0, joltedStuck: 0 },
+    rival: { noticed: -1, ignored: 0, knockTick: -1, willKnock: 0, joltedStuck: 0 },
     director: {
       emaVx: new Float64Array(3),
       eta: new Float64Array(3),

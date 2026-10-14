@@ -6,9 +6,16 @@
 //   TUNING = changed in the first tuning pass of the sim core (docs/JOURNAL.md, 2026-10-14), with the old value
 //   CHOICE = engineering choice made while building the sim core, not in the sources (reason given)
 
-export const SIM_VERSION = 1;
+/** Bumped whenever the golden races change (map 9.3 rule 8; guarded by scripts/sim-version-guard.ts). */
+export const SIM_VERSION = 2;
 
-export const DEFAULT_PARAMS = {
+/** Freeze a table and everything inside it, so no other module can change a running or future race. */
+function deepFreeze<T extends object>(o: T): T {
+  for (const v of Object.values(o)) if (v !== null && typeof v === 'object') deepFreeze(v);
+  return Object.freeze(o);
+}
+
+export const DEFAULT_PARAMS = deepFreeze({
   // ---------- glass ----------
   /** Glass width, mm. MAP 3.1, R4 1.1. */
   W: 240,
@@ -290,9 +297,9 @@ export const DEFAULT_PARAMS = {
   RIVAL_CORNER_BONUS: 2.5,
   /** Penalty for drops near dirt (picky). MAP 3.5; weight: CHOICE, tuned. */
   RIVAL_DIRT_PENALTY: 2,
-  /** Dirt counts as "near" when the pin field within this radius exceeds RIVAL_DIRT_LEVEL. CHOICE. */
+  /** Dirt counts as "near" when a visible speck or smudge comes within this distance of the drop, mm. CHOICE.
+   *  Only the visible dirt counts: he sees what you see (MAP 3.5), never the invisible noise in the pin field. */
   RIVAL_DIRT_R: 5,
-  RIVAL_DIRT_LEVEL: 1.9,
   /** 1 time in 10 he points at a random drop. MAP 3.5. */
   RIVAL_WHIM: 0.1,
   /** Notices a threat within 35 mm ahead of his drop. MAP 3.5. */
@@ -327,7 +334,7 @@ export const DEFAULT_PARAMS = {
   ETA_TAU_S: 1.5,
   /** Lead-swap hysteresis, mm. CHOICE (avoids counting jitter as swaps). */
   LEAD_HYST_MM: 1,
-};
+});
 
 export type Params = { -readonly [K in keyof typeof DEFAULT_PARAMS]: number };
 export type ParamOverrides = Partial<Params>;
@@ -348,7 +355,7 @@ export interface LightProfile {
   lightning: number;
 }
 
-export const LIGHTS: Record<Light, LightProfile> = {
+export const LIGHTS: Readonly<Record<Light, Readonly<LightProfile>>> = deepFreeze({
   // Grey drive: provincial road, drizzle. MAP 3.3 (bump 25-50%, braking 35% in town, leaf 10-15%).
   grey: {
     rainPerS: 8,
@@ -382,4 +389,4 @@ export const LIGHTS: Record<Light, LightProfile> = {
     clearing: 0.05,
     lightning: 0.4,
   },
-};
+});

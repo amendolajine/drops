@@ -63,6 +63,8 @@ function newCreature(kind: number, event: number, x: number, y: number, r: numbe
     releaseTick: -1,
     surfing: 0,
     goneWhy: 0,
+    triesPlayer: 0,
+    triesRival: 0,
   };
 }
 

@@ -324,7 +324,7 @@ export function hashState(s: RaceState): string {
   h = mixStream(h, st.events);
   h = mixStream(h, st.car);
   h = mixStream(h, st.rival);
-  h = mixStream(h, st.knock);
+  h = mix(h, s.knockSeed);
   h = mixStream(h, st.preroll);
   const d = s.drops;
   h = mix(h, d.n);

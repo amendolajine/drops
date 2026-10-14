@@ -117,6 +117,9 @@ export interface Creature {
   surfing: number;
   /** why it left: 0 time/speed, 1 knock, 2 surfed off, 3 carried off, 4 never landed (too fast) */
   goneWhy: number;
+  /** scare attempts on this creature by each side: the counter of that side's own roll (D021) */
+  triesPlayer: number;
+  triesRival: number;
 }
 
 export interface Drops {
@@ -223,8 +226,10 @@ export interface Knocks {
 }
 
 export interface RivalMind {
-  /** creature he has noticed, -1 none */
+  /** creature he has noticed and plans to knock, -1 none */
   noticed: number;
+  /** bit k set: he decided to leave creature k alone (he does not knock 1 time in 4) */
+  ignored: number;
   /** race tick when he will knock on it, -1 none */
   knockTick: number;
   willKnock: number;
@@ -253,7 +258,6 @@ export interface Streams {
   events: Stream;
   car: Stream;
   rival: Stream;
-  knock: Stream;
 }
 
 export interface RaceState {
@@ -274,6 +278,8 @@ export interface RaceState {
   /** integer seeds for counter-based hashing */
   pearlSeed: number;
   hopSeed: number;
+  /** scare rolls: hashFloat(knockSeed, creature * 4 + side, that side's attempt on it), independent per side */
+  knockSeed: number;
   glass: Glass;
   drops: Drops;
   gridHead: Int32Array;
