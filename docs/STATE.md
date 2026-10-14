@@ -16,8 +16,9 @@ Step 1 delivered, waiting for Antonio at the step 1 checkpoint. Step 3 days 1-3 
 - VERIFIED Deterministic sim core in `src/sim` (pure API `createRace`, `step`, `snapshot`, `hashState`): glass
   generation, drop physics, car speed, event schedule, knock, rival, director. Rules enforced by Biome + check-sim (D011).
   Proof: `npm run check` green; Vitest 11 files, 72 tests passed (2026-10-14).
-- VERIFIED Golden test: 20 recorded races identical in Node, Chromium and WebKit (Playwright, 2026-10-14).
-  Firefox: TODO, see "In progress".
+- VERIFIED Golden test: 20 recorded races identical in Node 26 (local), Node 24.21 (CI), Chromium, Firefox and WebKit.
+  Proof: local Playwright run (Chromium, WebKit) and CI run 38617750435 job `golden-browsers` (Chromium, Firefox,
+  WebKit: "20 races identical to Node and golden.json"), job `checks` (11 test files passed on Node v24.21.0).
 - VERIFIED Bots and metrics: `npm run sim -- --races 1000 --seed 1` (JOURNAL 2026-10-14). Output in
   `~/Documents/drops/private/03_prototipo-corsa/drops_03_metriche-nucleo.json`.
 - VERIFIED Debug page `npm run dev` -> `?seed=`, `?debug=1`, `window.__drops` (Playwright test in Chromium and WebKit;
@@ -39,8 +40,9 @@ Step 1 delivered, waiting for Antonio at the step 1 checkpoint. Step 3 days 1-3 
 | Best reader vs rival | 71.5% | 55-60% (attentive person) |
 
 ## In progress
-- Branch `sim-core` pushed for CI; Firefox golden result comes from the CI job `golden-browsers` (local Firefox
-  cannot start inside this machine's command sandbox).
+- Nothing running. Branch `sim-core` pushed; CI green (run 38617750435). Not merged into `main`.
+- Note: Firefox cannot start inside this machine's command sandbox ("Could not find profile folder"), so the
+  Firefox golden check runs in CI only.
 
 ## Next
 1. Antonio: step 1 checkpoint (map approval, questions 1-9, history rewrite yes/no, licence).
@@ -57,7 +59,7 @@ Step 1 delivered, waiting for Antonio at the step 1 checkpoint. Step 3 days 1-3 
 - The rival's habits are tuned against a near-oracle bot: final balance needs the step 3 test with people.
 
 ## Known unverified facts
-- See map section 14.4. ASSUMED: Firefox golden hashes match (pending CI).
+- See map section 14.4.
 
 ## Progress folder layout
 `~/Documents/drops/private/`

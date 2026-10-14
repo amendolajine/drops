@@ -44,3 +44,6 @@ One entry per work block, newest last. What happened, with proof.
     knock value +1.6 pp +-1.2 (5-10); wanted another knock 0.9% (>=25%); gulp 8.8% (3-6%);
     best reader beats the rival 71.5% (55-60%, but the bot is close to an oracle).
   - Glasses: 0 of 1000 would pass all four bank criteria (pair closeness mean 10.5% vs 25%); generator fallback 0%.
+- Pushed `sim-core` (never main). CI run 38617750435: success. `checks` on Node v24.21.0: lint, check-sim, typecheck,
+  11 test files passed, build, size 18.37 kB gzip. `golden-browsers`: 6 Playwright tests passed; Chromium, Firefox and
+  WebKit each report "20 races identical to Node and golden.json". Pages workflow did not run (main only).
