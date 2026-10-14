@@ -1,0 +1,465 @@
+{
+  "simVersion": 1,
+  "generatedWith": "node v26.10.0",
+  "cases": [
+    {
+      "name": "golden-01",
+      "checkpoints": [
+        "00026834",
+        "a3de63ab",
+        "7fcb5138",
+        "ee7aec91",
+        "93b18ce6"
+      ],
+      "final": "3c6e15c0",
+      "schedule": "13b4c0eb",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2872,
+      "picks": [
+        0,
+        3
+      ],
+      "knocksUsed": [
+        0,
+        2
+      ]
+    },
+    {
+      "name": "golden-02",
+      "checkpoints": [
+        "ad653332",
+        "75bfced8",
+        "e40c41fc",
+        "8bbc6fdd",
+        "c445a507"
+      ],
+      "final": "50366e24",
+      "schedule": "c4e3ac52",
+      "winner": 3,
+      "reason": 4,
+      "endTick": 2318,
+      "picks": [
+        1,
+        3
+      ],
+      "knocksUsed": [
+        2,
+        3
+      ]
+    },
+    {
+      "name": "golden-03",
+      "checkpoints": [
+        "8167daa6",
+        "83adaa0a",
+        "adc932a4",
+        "55229dba",
+        "1c86c3da",
+        "ae4fbb39"
+      ],
+      "final": "34441fad",
+      "schedule": "7edc6a35",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2976,
+      "picks": [
+        2,
+        3
+      ],
+      "knocksUsed": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "golden-04",
+      "checkpoints": [
+        "358589f8",
+        "c69f7c1d",
+        "a7dc1fb8",
+        "a04b02a3",
+        "34bb1db1"
+      ],
+      "final": "b15c4cc5",
+      "schedule": "7f089ca1",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 2495,
+      "picks": [
+        4,
+        3
+      ],
+      "knocksUsed": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "golden-05",
+      "checkpoints": [
+        "ec637de3",
+        "3ad9cfed",
+        "8c9008ce",
+        "a97cade3",
+        "7e864db0",
+        "bf526726"
+      ],
+      "final": "0cb602c5",
+      "schedule": "d5e0f37f",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 3010,
+      "picks": [
+        4,
+        0
+      ],
+      "knocksUsed": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "golden-06",
+      "checkpoints": [
+        "0263d13f",
+        "087c63ea",
+        "e3dd165f",
+        "7e7860e2"
+      ],
+      "final": "2592e39a",
+      "schedule": "5a8dfec5",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 1976,
+      "picks": [
+        0,
+        5
+      ],
+      "knocksUsed": [
+        2,
+        0
+      ]
+    },
+    {
+      "name": "golden-07",
+      "checkpoints": [
+        "50cc5d3c",
+        "1825f205",
+        "1d084a5c",
+        "3d7be826"
+      ],
+      "final": "f725abc7",
+      "schedule": "b14590d0",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2267,
+      "picks": [
+        0,
+        3
+      ],
+      "knocksUsed": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "golden-08",
+      "checkpoints": [
+        "5e4d04cb",
+        "74d014f2",
+        "71cfc4b2",
+        "762c4596",
+        "a2dbb759"
+      ],
+      "final": "6a108a2f",
+      "schedule": "8027cf07",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2708,
+      "picks": [
+        1,
+        2
+      ],
+      "knocksUsed": [
+        3,
+        0
+      ]
+    },
+    {
+      "name": "golden-09",
+      "checkpoints": [
+        "9b91a7ae",
+        "77ce085a",
+        "55025829",
+        "c090727b"
+      ],
+      "final": "c9ee8472",
+      "schedule": "94250a2f",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 2224,
+      "picks": [
+        2,
+        5
+      ],
+      "knocksUsed": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "golden-10",
+      "checkpoints": [
+        "923143c6",
+        "72c7a9d4",
+        "ce963e41",
+        "3960f0ec",
+        "64a1a37d",
+        "e09f1be4",
+        "6ff7594c"
+      ],
+      "final": "c782d11f",
+      "schedule": "712e319d",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 3511,
+      "picks": [
+        3,
+        0
+      ],
+      "knocksUsed": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "golden-11",
+      "checkpoints": [
+        "6719f07f",
+        "0f423d4c",
+        "ebfbccaa",
+        "3ef3c40e",
+        "1b1c9f47",
+        "5efac2fb"
+      ],
+      "final": "68d21e57",
+      "schedule": "0f765f23",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2988,
+      "picks": [
+        4,
+        1
+      ],
+      "knocksUsed": [
+        2,
+        0
+      ]
+    },
+    {
+      "name": "golden-12",
+      "checkpoints": [
+        "5d8faf05",
+        "cfd0b020",
+        "3d7a10dd",
+        "1d6540f6"
+      ],
+      "final": "bbae173b",
+      "schedule": "3ecb4f9c",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2076,
+      "picks": [
+        0,
+        5
+      ],
+      "knocksUsed": [
+        3,
+        2
+      ]
+    },
+    {
+      "name": "golden-13",
+      "checkpoints": [
+        "dd04b61d",
+        "720d4be1",
+        "29cc792d",
+        "381ca0e3"
+      ],
+      "final": "acb997be",
+      "schedule": "18eae945",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2276,
+      "picks": [
+        0,
+        3
+      ],
+      "knocksUsed": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "golden-14",
+      "checkpoints": [
+        "117739c3",
+        "fec49c90",
+        "9112f8ef",
+        "c841dc3f",
+        "aa5b4454",
+        "8eff33b9"
+      ],
+      "final": "cc57a753",
+      "schedule": "75131dd4",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 2922,
+      "picks": [
+        2,
+        1
+      ],
+      "knocksUsed": [
+        2,
+        0
+      ]
+    },
+    {
+      "name": "golden-15",
+      "checkpoints": [
+        "e93dd7d0",
+        "eb297010",
+        "23bfffeb",
+        "4f9c552c"
+      ],
+      "final": "3a0c15d6",
+      "schedule": "576c1eb9",
+      "winner": 2,
+      "reason": 1,
+      "endTick": 2006,
+      "picks": [
+        2,
+        0
+      ],
+      "knocksUsed": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "golden-16",
+      "checkpoints": [
+        "5bf40d7a",
+        "6aebbb8c",
+        "16f7d712",
+        "f0fc0a3e"
+      ],
+      "final": "eb88ee3a",
+      "schedule": "ade8c9f2",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 1872,
+      "picks": [
+        3,
+        5
+      ],
+      "knocksUsed": [
+        3,
+        0
+      ]
+    },
+    {
+      "name": "golden-17",
+      "checkpoints": [
+        "6c037dbc",
+        "fa6a1186",
+        "7286669e",
+        "64c55764",
+        "f1ac2ff6"
+      ],
+      "final": "a948e99b",
+      "schedule": "18d69f58",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 2856,
+      "picks": [
+        4,
+        5
+      ],
+      "knocksUsed": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "golden-18",
+      "checkpoints": [
+        "0ba04f57",
+        "8e2b6f66",
+        "163b065d",
+        "fa69319f",
+        "ea66ccf2"
+      ],
+      "final": "8098c9a5",
+      "schedule": "b81de8b8",
+      "winner": 3,
+      "reason": 3,
+      "endTick": 2328,
+      "picks": [
+        5,
+        0
+      ],
+      "knocksUsed": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "golden-19",
+      "checkpoints": [
+        "0b0416a8",
+        "f7c5daeb",
+        "c1e7e3aa",
+        "8dd6eb53"
+      ],
+      "final": "c1b94670",
+      "schedule": "e6da9e9a",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 1845,
+      "picks": [
+        0,
+        1
+      ],
+      "knocksUsed": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "golden-20",
+      "checkpoints": [
+        "52f1281b",
+        "f81eea5a",
+        "65370152",
+        "92dd2ce9",
+        "91236529",
+        "9fe6aca7"
+      ],
+      "final": "8b688728",
+      "schedule": "c3d254f8",
+      "winner": 1,
+      "reason": 1,
+      "endTick": 2990,
+      "picks": [
+        1,
+        2
+      ],
+      "knocksUsed": [
+        3,
+        1
+      ]
+    }
+  ]
+}
