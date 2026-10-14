@@ -32,3 +32,21 @@ Format: number, date, decision, why, evidence, who decided.
 - Why: Antonio asked that context compaction never causes lost work or hallucinated state.
 - What: the project rules file protocol, STATE.md, DECISIONS.md, JOURNAL.md, evidence labels, in-game debug tools.
 - Who: Antonio asked.
+
+## D007 - 2026-10-14 - Pages publishes only the game folder
+- Why: the map review found that publishing the whole repo exposed the project rules file and docs/ (with a work name and local paths).
+- What: `pages.yml` uploads `site/` (later `dist/` from the Vite build). Work names and local paths removed from all files.
+- Evidence: commit 2026df6, deploy run 38605895549 success; the rules file URL on Pages returns 404 (fetched 2026-10-14).
+- Open: older commits still contain the work name; rewriting history needs Antonio's explicit yes.
+- Who: Antonio.
+
+## D008 - 2026-10-14 - Production map v1.1 adopted as the plan of record
+- Where: `~/Documents/drops/private/01_mappa-del-gioco/drops_01_mappa-del-gioco.md` (local, private).
+- Summary: three.js r186 + TypeScript + Vite; deterministic 60 Hz sim with sfc32 streams; offline glass bank;
+  indexed-colour rendering; synthesized Web Audio; MVP = one provincial road in three lights
+  (Grey drive, Sunset after the storm, Night storm); 6 events; knock with two uses (scare / jolt), 3 per race.
+- Order: sim core first (needed to drive the moodboard clips), then moodboard (step 2) and grey-box race (step 3) in parallel.
+- Who: team proposal; Antonio's approval pending at the step 1 checkpoint.
+
+## D009 - 2026-10-14 - Reference test machine
+- MacBook Air M3, 24 GB, built-in 2560x1664 Retina plus an external 3840x2160 display (system_profiler, 2026-10-14).
