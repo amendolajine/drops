@@ -13,3 +13,5 @@ dist-golden/
 # private, never committed (map 9.5 point 1 and 3)
 .env*
 .private-terms
+private/
+.private-names

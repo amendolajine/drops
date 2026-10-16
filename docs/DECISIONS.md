@@ -136,3 +136,4 @@ Format: number, date, decision, why, evidence, who decided.
 - The dev page (`index.html` at the repo root, `npm run dev`) is never deployed: pages.yml still uploads `site/` (D007).
 - package.json has no `license` field until Antonio answers the licence question (STATE, open questions).
 - Who: Antonio.
+
