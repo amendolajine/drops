@@ -137,3 +137,8 @@ Format: number, date, decision, why, evidence, who decided.
 - package.json has no `license` field until Antonio answers the licence question (STATE, open questions).
 - Who: Antonio.
 
+
+## D20 - 2026-10-16 - Private workspace folder
+- What: live status, journal, production docs and look-dev live in `private/`, ignored by this repo and versioned locally.
+  docs/STATE.md and docs/JOURNAL.md moved there so there is one status file. Supersedes the progress-folder location in D008.
+- Who: Antonio.
