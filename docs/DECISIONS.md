@@ -206,3 +206,16 @@ Format: number, date, decision, why, evidence, who decided.
 - Why: the phone layout covered much of the glass; enlargement and rotation also revealed text clipping and
   collisions. Test entry, choice, race, pause, help, result and feedback in both languages at 15 viewport sizes.
 - Who: Antonio.
+
+
+## D026 - 2026-10-17 - Brief context before the friends playtest
+- What: add a short Italian/English premise after language selection, before the existing start action.
+  Explain the imaginary raindrop-race inspiration, back seat, little brother and race goal without prescribing
+  an emotional response or a strategy. Keep the two existing control steps and prototype scope.
+- Identify the player's own tapping hand and the brother's separate ability to tap. Repeat the premise
+  and this distinction in the existing reopenable controls guide, outside the glass.
+- Label new optional technical context as friends-2026-10-17-v5-context. The goal question now measures
+  understanding after an introduction, so do not pool it as unaided discovery with earlier responses.
+- Keep the same public URL, bilingual file-only feedback, default full motion and race behaviour.
+- Why: participants lacked the situation and could misidentify the hand or the other racer.
+- Who: Antonio.
