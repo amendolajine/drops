@@ -153,3 +153,12 @@ Format: number, date, decision, why, evidence, who decided.
 - Why: clear controls and uninterrupted first impressions matter more than collecting comments during play.
   Visual identity proposals remain separate from the functional prototype until an artistic choice is made.
 - Who: Antonio.
+
+## D022 - 2026-10-17 - Radio frame and a stable play area
+- What: use the selected radio direction for the research page: an amber display, a dark green enclosure,
+  Space Mono for the wordmark and short headings, and Barlow for controls and explanations.
+- Give the game its own layout area. Input receipts, event messages, selection controls and feedback states
+  must not change the position or size of the rendered glass while the browser window stays the same size.
+- Why: resizing the scene during a tap makes it harder to follow a moving drop. Preserve room for messages
+  and keep a scrollable layout when a short window cannot fit the complete interface.
+- Who: Antonio.
