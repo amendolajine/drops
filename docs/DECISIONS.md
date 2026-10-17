@@ -191,3 +191,18 @@ Format: number, date, decision, why, evidence, who decided.
 - D008's earlier team-proposal label is historical; the project decisions and artistic choices belong to Antonio.
 - Why: prevent destructive mistakes and publication of an unchecked revision without adding a larger workflow.
 - Who: Antonio.
+
+
+## D025 - 2026-10-17 - Responsive controls outside the glass
+- What: keep drop choices, actions, messages and help outside the rendered scene. Number badges are visual
+  references with short leader lines; the separate choice buttons provide the keyboard and touch targets.
+- Preserve the entire scene and its proportions across game states. Use a vertical page on narrow screens,
+  a separate control column on short landscape screens, and the existing side questionnaire on wide desktops.
+  Scrolling is preferable to covering the glass, shrinking touch targets or clipping enlarged text.
+- Use at least 44-pixel primary controls, explicit browser-independent form styling, safe-area margins and
+  small-viewport sizing. Allow zoom and both orientations. Reset the scroll position when entering the game.
+- Keep full motion as the initial setting, preserve the race during resizing and retain file-only feedback.
+  Retain the previous hashed assets for cached participant pages while publishing the new version at the same URL.
+- Why: the phone layout covered much of the glass; enlargement and rotation also revealed text clipping and
+  collisions. Test entry, choice, race, pause, help, result and feedback in both languages at 15 viewport sizes.
+- Who: Antonio.
