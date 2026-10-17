@@ -4,6 +4,31 @@
 const LOCAL_PATH = new RegExp(['', 'Users', ''].join('/'));
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
 const ALLOWED_EMAIL = [/@users\.noreply\.github\.com$/i, /@example\.(com|org)$/i];
+const PUBLIC_DOT_PATHS = new Set([
+  '.gitattributes',
+  '.gitignore',
+  '.github',
+  '.githooks',
+  '.npmrc',
+  '.nvmrc',
+  '.size-limit.json',
+  '.nojekyll',
+]);
+
+/** File paths are checked before reading content, including for binary files. */
+export function isPrivatePath(path: string): boolean {
+  return path
+    .toLowerCase()
+    .split('/')
+    .some(
+      (part) =>
+        part === 'private' ||
+        part.startsWith('.env') ||
+        part === '.private-terms' ||
+        part === '.private-names' ||
+        (part.startsWith('.') && !PUBLIC_DOT_PATHS.has(part)),
+    );
+}
 
 /** Problems in one text. Private names are reported by number only, never by their text. */
 export function findPrivate(text: string, terms: readonly string[]): { line: number; what: string }[] {
@@ -12,7 +37,8 @@ export function findPrivate(text: string, terms: readonly string[]): { line: num
   text.split('\n').forEach((line, i) => {
     if (LOCAL_PATH.test(line)) out.push({ line: i + 1, what: 'local path' });
     for (const m of line.matchAll(EMAIL))
-      if (!ALLOWED_EMAIL.some((r) => r.test(m[0]))) out.push({ line: i + 1, what: `email address ${m[0]}` });
+      if (!ALLOWED_EMAIL.some((r) => r.test(m[0])))
+        out.push({ line: i + 1, what: 'email address [redacted]' });
     const l = line.toLowerCase();
     low.forEach((t, k) => {
       if (t && l.includes(t)) out.push({ line: i + 1, what: `private name #${k + 1}` });

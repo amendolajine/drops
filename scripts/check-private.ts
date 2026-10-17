@@ -11,7 +11,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { log } from '../src/debug/log.ts';
-import { findPrivate } from './private-rules.ts';
+import { findPrivate, isPrivatePath } from './private-rules.ts';
 
 const root = join(import.meta.dirname, '..');
 const staged = process.argv.includes('--staged');
@@ -31,13 +31,19 @@ function git(args: string[]): string {
   return execFileSync('git', args, { cwd: root, maxBuffer: 64 * 1024 * 1024 }).toString();
 }
 
-const files = (staged ? git(['diff', '--cached', '--name-only', '--diff-filter=ACMR']) : git(['ls-files']))
-  .split('\n')
-  .filter((f) => f && f !== '.private-terms');
+const files = (
+  staged ? git(['diff', '--cached', '--name-only', '-z', '--diff-filter=ACMR']) : git(['ls-files', '-z'])
+)
+  .split('\u0000')
+  .filter(Boolean);
 
 const terms = privateTerms();
 const problems: string[] = [];
 for (const f of files) {
+  if (isPrivatePath(f)) {
+    problems.push(`${f}: private file path`);
+    continue;
+  }
   let text: string;
   try {
     text = staged ? git(['show', `:${f}`]) : readFileSync(join(root, f), 'utf8');

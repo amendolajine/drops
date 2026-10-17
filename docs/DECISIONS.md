@@ -174,3 +174,20 @@ Format: number, date, decision, why, evidence, who decided.
 - Publish only the compiled allowlist, credits and licence notices. No private source folders, response data,
   credentials, reports or source maps. Keep the public link independent of a local development server.
 - Who: Antonio.
+
+
+## D024 - 2026-10-17 - Minimum repository safeguards
+- What: protect main against deletion and non-fast-forward updates, with an active ruleset and no bypass
+  actors. Keep ordinary pushes available for this single-owner project; additional approval steps are not required.
+- Publish only after the complete CI workflow succeeds for a push or manual run on main in this repository.
+  Check out the exact checked revision, publish only site/, and pin the existing official actions to full revisions.
+- Reject private file paths before checking their contents, including forced additions and binary files.
+  Do not echo rejected personal email addresses in public check logs. Enable dependency vulnerability alerts;
+  leave automatic dependency updates unchanged.
+- Evidence: GitHub ruleset 25305090 is active; effective main rules include deletion and non_fast_forward.
+  Current files and reachable branch history were audited. No project tool attribution or configured private
+  names were found. This supersedes the unresolved historical-name concern in D007 for the audited history.
+  Preserve original third-party licence notices. No history rewrite or branch deletion is needed.
+- D008's earlier team-proposal label is historical; the project decisions and artistic choices belong to Antonio.
+- Why: prevent destructive mistakes and publication of an unchecked revision without adding a larger workflow.
+- Who: Antonio.
