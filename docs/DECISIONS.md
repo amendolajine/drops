@@ -142,3 +142,14 @@ Format: number, date, decision, why, evidence, who decided.
 - What: live status, journal, production docs and look-dev live in `private/`, ignored by this repo and versioned locally.
   docs/STATE.md and docs/JOURNAL.md moved there so there is one status file. Supersedes the progress-folder location in D008.
 - Who: Antonio.
+
+## D021 - 2026-10-17 - A bilingual, separate research playtest
+- What: the research playtest offers Italian or English before entry, then uses that language throughout the game
+  controls and feedback form. This is an exception for research; the release language decision remains unchanged.
+- The questionnaire starts closed beside the game on desktop. Opening it during a race pauses the simulation;
+  closing it does not resume the race. Replay and feedback remain separate choices after the result.
+- Feedback has no player accounts or gameplay tracking. Optional notes precede guided answer choices. Selected
+  language is saved explicitly; version, race seed and phase can be omitted. Older response files remain importable.
+- Why: clear controls and uninterrupted first impressions matter more than collecting comments during play.
+  Visual identity proposals remain separate from the functional prototype until an artistic choice is made.
+- Who: Antonio.
