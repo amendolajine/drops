@@ -162,3 +162,15 @@ Format: number, date, decision, why, evidence, who decided.
 - Why: resizing the scene during a tap makes it harder to follow a moving drop. Preserve room for messages
   and keep a scrollable layout when a short window cannot fit the complete interface.
 - Who: Antonio.
+
+## D023 - 2026-10-17 - Public friends playtest on personal GitHub Pages
+- What: publish the approved radio-framed playtest through the existing personal repository and Pages workflow.
+  Start with full motion even when the system requests reduced motion; retain the manual reduction control.
+- Pages serves static files. The public questionnaire therefore downloads a file for the participant to give
+  to Antonio. The collection page imports received files and combines them locally; it has no automatic inbox.
+  Force this delivery mode in every published HTML entry, regardless of query parameters.
+- Why: keep the requested hosting boundary and avoid presenting a download as an automatic submission.
+  A future persistent collector requires a separately approved hosting arrangement.
+- Publish only the compiled allowlist, credits and licence notices. No private source folders, response data,
+  credentials, reports or source maps. Keep the public link independent of a local development server.
+- Who: Antonio.

@@ -1,0 +1,7 @@
+drops.
+Game code: MIT.
+Original artwork, name and logo: all rights reserved.
+Three.js: MIT, see licenses/three.txt.
+Vite module preload helper: MIT, see licenses/vite.txt.
+Barlow and Space Mono: SIL Open Font License 1.1, original notices in licenses/barlow.txt and licenses/space-mono.txt. Font files are unchanged.
+This prototype has no music.

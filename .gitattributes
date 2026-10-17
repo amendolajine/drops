@@ -1,0 +1,3 @@
+# Preserve compiled shader strings and original third-party licence notices.
+site/assets/** -whitespace linguist-generated=true
+site/licenses/** -whitespace

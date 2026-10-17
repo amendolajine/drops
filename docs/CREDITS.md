@@ -1,13 +1,20 @@
 # Credits
 
-Third-party material used by drops. Published later on the site as `credits.md` (map 9.5).
+Third-party material used by drops. Runtime notices ship in `site/CREDITS.txt` and `site/licenses/`.
 Rule (the project rules file): only original work or CC0 / MIT / BSD / Apache-2.0 / OFL.
 
 ## Assets in the game (art, sound, fonts, data)
 
 | Asset | Author | Source URL | License | Where it is used |
 |---|---|---|---|---|
-| (none yet) | | | | |
+| Barlow Regular | The Barlow Project Authors | https://github.com/jpt/barlow | SIL Open Font License 1.1 | Interface text and controls |
+| Space Mono Regular | The Space Mono Project Authors | https://github.com/googlefonts/spacemono | SIL Open Font License 1.1 | Wordmark and short headings |
+
+Both font files are unchanged. Their complete original notices ship as
+`site/licenses/barlow.txt` and `site/licenses/space-mono.txt`. The night scene and original identity artwork
+remain all rights reserved. The compiled preview includes the Three.js MIT notice and the Vite core MIT
+notice for its module preload helper. Licence texts were checked locally on 17 October 2026.
+The published preview was compiled with Vite 8.3.4; the table below describes the core repository tooling.
 
 All code in `src/` is original. The simulation follows published physics (papers listed in the research
 report R4, used as inspiration and for numbers, no code copied).
@@ -16,7 +23,7 @@ report R4, used as inspiration and for numbers, no code copied).
 
 | Package | Version | License | Source | Role | Ships to players? |
 |---|---|---|---|---|---|
-| three | 0.186.1 | MIT | https://github.com/mrdoob/three.js | 3D rendering (installed, not used yet) | yes, from step 4 |
+| three | 0.186.1 | MIT | https://github.com/mrdoob/three.js | 3D rendering | yes |
 | vite | 8.3.3 | MIT | https://github.com/vitejs/vite | dev server and build | no (build tool) |
 | typescript | 7.0.2 | Apache-2.0 | https://github.com/microsoft/TypeScript | type checking | no |
 | vitest | 5.0.3 | MIT | https://github.com/vitest-dev/vitest | unit and golden tests | no |
