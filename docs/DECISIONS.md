@@ -253,3 +253,23 @@ Format: number, date, decision, why, evidence, who decided.
   merge, while tapping the player's already moving drop leaves the physical field unchanged. Feedback
   must preserve this difference instead of celebrating every input in the same way.
 - Who: Antonio.
+
+## D029 - 2026-10-18 - Authored arm topology and a visible companion reach
+- What: replace the primitive tapping arm with the CC0 WRAD ARMS mesh and articulated finger rig.
+  Preserve the eye camera and real glass contact. Fixed arm segments follow a seated shoulder anchor;
+  a dedicated sleeve continuation joins the first-person view at the lower edge of the frame.
+- Adapt the grip, thumb opposition and wrist orientation for a closed-hand tap. Continuous curve frames
+  keep the sleeve from twisting into spikes. The first-person clothing continuation is a presentation
+  adaptation, not a claim of a fully validated body or pediatric proportions.
+- Replace the rival's invisible forearm movement with a seated-to-reaching body from the rear left seat,
+  including support, body weight, an articulated tapping arm and a return to rest. Keep the head forward
+  of the player's eyes and leave the center of the race visible.
+- Prepare the rival's visible action from his planned creature tap or current stationary drop and
+  observed vehicle acceleration. Do not wait until the speed threshold is already met, do not read the
+  future road schedule and do not change his decisions, random draws or accepted contact time.
+- Preview his own next targeting draw on a copy of his random stream, including a possible random miss.
+  Do not consume the real stream during presentation. Otherwise the body could change targets at impact.
+- Render dirt, stickers and landed obstacles in scene depth so they remain behind a reaching person.
+- Why: a geometrically correct contact and a text notice did not communicate who was acting. Review
+  actual approach, contact and withdrawal frames in the real cabin, not only isolated geometry checks.
+- Who: Antonio.

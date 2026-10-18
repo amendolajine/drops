@@ -1,6 +1,7 @@
 drops.
 Game code: MIT.
 Original artwork, name and logo: all rights reserved.
+WRAD ARMS by wriks: CC0 1.0, see licenses/wrad-arms.txt. Arm mesh, rig and pale skin texture adapted from https://wriks.itch.io/wrad-arms.
 Three.js: MIT, see licenses/three.txt.
 Vite module preload helper: MIT, see licenses/vite.txt.
 Barlow and Space Mono: SIL Open Font License 1.1, original notices in licenses/barlow.txt and licenses/space-mono.txt. Font files are unchanged.

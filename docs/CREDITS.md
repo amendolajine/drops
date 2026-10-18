@@ -9,12 +9,17 @@ Rule (the project rules file): only original work or CC0 / MIT / BSD / Apache-2.
 |---|---|---|---|---|
 | Barlow Regular | The Barlow Project Authors | https://github.com/jpt/barlow | SIL Open Font License 1.1 | Interface text and controls |
 | Space Mono Regular | The Space Mono Project Authors | https://github.com/googlefonts/spacemono | SIL Open Font License 1.1 | Wordmark and short headings |
+| WRAD ARMS mesh, rig and pale skin texture | wriks | https://wriks.itch.io/wrad-arms | CC0 1.0 Universal | Adapted first-person arm and rival's tapping arm |
 
 Both font files are unchanged. Their complete original notices ship as
 `site/licenses/barlow.txt` and `site/licenses/space-mono.txt`. The night scene and original identity artwork
 remain all rights reserved. The compiled preview includes the Three.js MIT notice and the Vite core MIT
 notice for its module preload helper. Licence texts were checked locally on 17 October 2026.
 The published preview was compiled with Vite 8.3.4; the table below describes the core repository tooling.
+The WRAD ARMS archive and its included CC0 notice were checked on 18 October 2026. The adapted mesh
+uses the original articulated hand and fixed arm segments, with a new grip and reach animation.
+The complete notice ships as `site/licenses/wrad-arms.txt`. No animation or model from a closed game
+is included.
 
 All code in `src/` is original. The simulation follows published physics (papers listed in the research
 report R4, used as inspiration and for numbers, no code copied).
