@@ -219,3 +219,22 @@ Format: number, date, decision, why, evidence, who decided.
 - Keep the same public URL, bilingual file-only feedback, default full motion and race behaviour.
 - Why: participants lacked the situation and could misidentify the hand or the other racer.
 - Who: Antonio.
+
+
+## D027 - 2026-10-18 - First-person glass taps and accepted-event feedback
+- What: replace the player's window-view shoulder/body stand-in with a dedicated first-person arm and
+  closed hand. Keep the existing eye camera and shared scene depth. Approach the recorded glass point,
+  contact it with the hand surface, then withdraw; never show the player's body as an external character.
+- Derive presentation events and locations from accepted simulation taps. Rejected input must not start
+  a new gesture. Keep player and rival timing, locations and remaining charges separate.
+- Show a small local contact cue and a distinct rival count/message. The rival already taps autonomously;
+  preserve that behaviour and all simulation outcomes. A spent tap is not a promise of a moving drop.
+- Use build friends-2026-10-18-v6-first-person for optional feedback context, preserving existing files.
+  Keep the same Pages URL, bilingual entry, full-motion default and file-only feedback delivery.
+- The view arm is stylized presentation, not a validated anatomical reach model. The brother's complete
+  leaning pose remains separate work. Judge the silhouette and pane contact in actual rendered frames.
+- Why: the old shoulder appeared as an unrelated figure; hand contact and the rival's taps were unclear,
+  especially on small screens. These are core interaction issues to consolidate before new content.
+- Who: Antonio.
+- Reject points hidden by opaque cabin geometry, including the rear seat, before sending player input.
+  Hide aiming and contact cues on those covered surfaces; keep the simulation unchanged.
