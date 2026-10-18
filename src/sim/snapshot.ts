@@ -260,6 +260,8 @@ export function describe(s: RaceState, code: number, a: number, b: number, c: nu
       return `${side(a)} picked drop ${b}`;
     case L.MERGE_PICKED:
       return `candidate ${a} swallowed a drop (+${fmt(b, 2)} uL)`;
+    case L.DROP_MERGE:
+      return `drop #${a} absorbed drop #${b} (+${fmt(c, 2)} uL)`;
     case L.GULP:
       return `gulp! candidate ${a} swallowed candidate ${b}`;
     case L.CAND_FINISH:

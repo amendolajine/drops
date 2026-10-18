@@ -382,6 +382,8 @@ function merge(s: RaceState, i: number, j: number): void {
   d.burst[k] = round(p.BURST_S * p.TICK_HZ);
   if (d.moving[o]) d.moving[k] = 1;
   if (d.kind[k] === KIND_PEARL) d.kind[k] = KIND_AMBIENT;
+  // Identity provenance for presentation and replays; this does not change the merge.
+  logEvent(s.log, s.tick, L.DROP_MERGE, d.id[k], d.id[o], vo);
   killDrop(s, o);
 }
 

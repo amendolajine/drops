@@ -238,3 +238,18 @@ Format: number, date, decision, why, evidence, who decided.
 - Who: Antonio.
 - Reject points hidden by opaque cabin geometry, including the rear seat, before sending player input.
   Hide aiming and contact cues on those covered surfaces; keep the simulation unchanged.
+
+## D028 - 2026-10-18 - Observable tap outcomes and merge identity
+- What: record each actual drop merge with surviving and absorbed drop IDs. This is presentation and
+  replay provenance; the merge calculation, forces, random streams and race outcomes stay unchanged.
+- Distinguish spending a tap, shaking a stationary drop, observing movement and clearing an obstacle.
+  An accepted tap is not a speed boost. Do not display artificial acceleration after empty taps.
+- Track a tapped unpicked drop through subsequent real merges so a delayed combination can be understood.
+  Show current simulated speed and water volume relative to the start outside the glass. The display
+  does not claim that every subsequent change was caused by the tap.
+- Replace arbitrary aim cycling with current stationary drops and obstacles. A selectable target is an
+  opportunity to try, not a guarantee that it will move, merge with the player's drop or win the race.
+- Why: a controlled three-branch replay demonstrates that freeing a nearby drop can produce a later
+  merge, while tapping the player's already moving drop leaves the physical field unchanged. Feedback
+  must preserve this difference instead of celebrating every input in the same way.
+- Who: Antonio.
