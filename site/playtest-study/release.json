@@ -1,0 +1,225 @@
+{
+  "schema": "drops-release-1",
+  "version": "journey-v8-2026-11-03",
+  "features": [
+    "seated-gaze",
+    "continuous-rain",
+    "reading-light",
+    "two-skies",
+    "local-resume",
+    "bilingual-file-feedback"
+  ],
+  "files": [
+    {
+      "name": "assets/Barlow-Regular-BeTQORF1.ttf",
+      "bytes": 104068,
+      "sha256": "95aa02c7c43096e0dd44d787ba6216864a67157e402adab59b35572e0c1577ea"
+    },
+    {
+      "name": "assets/feedback-B9BXxQJa.js",
+      "bytes": 10028,
+      "sha256": "7ebd35bc29aa6c684c6e518b0675c6fc77b06ee374c95f2796fd9943500a41ad"
+    },
+    {
+      "name": "assets/index-Dd0L40ao.css",
+      "bytes": 4646,
+      "sha256": "3862a0d3c3b3c3bd473910bbe391c240fb87dcf38dc3d2067a5d1a9aeadd7fe0"
+    },
+    {
+      "name": "assets/index-DMBnReWR.js",
+      "bytes": 3088,
+      "sha256": "3be0813b673339473b2d71f945fc97753f5d168c65a481551c9f75aef24f46c0"
+    },
+    {
+      "name": "assets/modulepreload-polyfill-P2Xu9kJm.js",
+      "bytes": 670,
+      "sha256": "418c206484b89b68ef5f067277831e583fc9193a62aadf4de269acaaeb12a85f"
+    },
+    {
+      "name": "assets/owner-B49i2476.js",
+      "bytes": 3979,
+      "sha256": "7fb6759b0a934d68f23c74cd74cd232dbb4fef79ffc80d31f3b80513e3335e04"
+    },
+    {
+      "name": "assets/owner-BBSEqO0T.css",
+      "bytes": 1354,
+      "sha256": "189a95018a19cd6b8d199957f83ad385856b7c150f52b7c8e1445bd2b75a853e"
+    },
+    {
+      "name": "assets/scene-CuTT1w6n.js",
+      "bytes": 680041,
+      "sha256": "52311eba4b42dd10aaeb36100b73f75b0cb75664eda512c445795c3556c828df"
+    },
+    {
+      "name": "assets/scene-DjKZU9TV.css",
+      "bytes": 2549,
+      "sha256": "c19b16fcd6a9b8af7df4ad2d36475550b8705a0b4ec867845ec9a8652fd627ce"
+    },
+    {
+      "name": "assets/SpaceMono-Regular-DFDYVJRE.ttf",
+      "bytes": 99356,
+      "sha256": "95837e182baeeada83368f7748db28357f0a1b75c6b84ff7065b5edf933c8e18"
+    },
+    {
+      "name": "feedback-study/owner.html",
+      "bytes": 1473,
+      "sha256": "5192ca2dedad48d3c66a594832634f0fdb1d707ae62c79391de4e74d2e73b34e"
+    },
+    {
+      "name": "playtest-study/index.html",
+      "bytes": 2892,
+      "sha256": "5f40bc05499ff82a0067bfaf88f84fbb4052132d457eac25356ecf3057a04ff0"
+    },
+    {
+      "name": "playtest-study/scene.html",
+      "bytes": 3539,
+      "sha256": "1bf4c25fe25597203dac46fa7173cece255773914ada8a071641718b42b73143"
+    }
+  ],
+  "sources": [
+    {
+      "name": "package-lock.json",
+      "sha256": "1cfcf89a25c14d0d704031f1e1b927c7ebf06bd67e50d65abad6d073fc5439fe"
+    },
+    {
+      "name": "src/sim/fmath.ts",
+      "sha256": "ccecd9d02c04cd5d5ea51d1201c063ae9e3a7885de1fbe99956601cba8c1d7ea"
+    },
+    {
+      "name": "src/sim/rng.ts",
+      "sha256": "783ea40fea60fe9b440109d048800eb636d429f9d7c37dc3ee21ddd8df4c504e"
+    },
+    {
+      "name": "tools/build-playtest.mjs",
+      "sha256": "02b10df1fc712874481fb52a60996342cbe2813ac755ff74b43d45e3a6d62b93"
+    },
+    {
+      "name": "web/assets/Barlow-Regular.ttf",
+      "sha256": "95aa02c7c43096e0dd44d787ba6216864a67157e402adab59b35572e0c1577ea"
+    },
+    {
+      "name": "web/assets/SpaceMono-Regular.ttf",
+      "sha256": "95837e182baeeada83368f7748db28357f0a1b75c6b84ff7065b5edf933c8e18"
+    },
+    {
+      "name": "web/feedback-study/owner.css",
+      "sha256": "bbcd1e0682d75e94823b8acaaee59ceff502fd7a2b955ce9ae9a86bd55226750"
+    },
+    {
+      "name": "web/feedback-study/owner.html",
+      "sha256": "a6e59b39c1fbe62c8cf0c54e30900b731d3d8a53112ef067de4ae1e5c06059c6"
+    },
+    {
+      "name": "web/feedback-study/owner.js",
+      "sha256": "53080710492b7e2fe358e977c9e833319c62471b038e115723fe572e634c18ab"
+    },
+    {
+      "name": "web/journey/cabin-art.js",
+      "sha256": "19ec9deea18f1170d35f8ed97067fbac78a2c60e12be8ac594289338454881df"
+    },
+    {
+      "name": "web/journey/cabin.js",
+      "sha256": "8e9217383733ed3c6f3f8ce046656d66a5d73eda3506cdca2cc5d85c3493a79c"
+    },
+    {
+      "name": "web/journey/capture-clock.js",
+      "sha256": "7fdf8fa85ec4658c1f00267bcd562b271e53ecca71736231c2b6126578fe16e2"
+    },
+    {
+      "name": "web/journey/continuity-controller.js",
+      "sha256": "f37a8ce75a5e0a58d63a59ed247eee4bf572bab616cdc5efd88fcf73bb54f2c0"
+    },
+    {
+      "name": "web/journey/glass.js",
+      "sha256": "9cd2aaee4dbfd7c2983c7c5f544c4be42e625bd1ec2067718cca907f81c69ab0"
+    },
+    {
+      "name": "web/journey/journey-state.js",
+      "sha256": "f92b4b6922a5b278156a5dc977d8956bee84338e85bdb0d3aefdeed21948c724"
+    },
+    {
+      "name": "web/journey/journey-store.js",
+      "sha256": "762f784db15847b67f2163742bc7e01276731640d58c2322575a5ac2188d1c60"
+    },
+    {
+      "name": "web/journey/landscape.js",
+      "sha256": "66d1a4edae98545a55158fed9917f72e853db721e377066a940eda56fa52b609"
+    },
+    {
+      "name": "web/journey/language.js",
+      "sha256": "36af28cec52641bd65ae965759625dce04abcf1abe7f5f721c829dadf69126df"
+    },
+    {
+      "name": "web/journey/main.js",
+      "sha256": "3cc1af6267df360de1775ebdccdbc299fb7ca3d001c46e8fa526dabe137c5745"
+    },
+    {
+      "name": "web/journey/panda-art.js",
+      "sha256": "da18075de8a31a2b3b219b1adaa4530671e0b4f5efb2d5bbc418a3d7e81f6d5a"
+    },
+    {
+      "name": "web/journey/panda-furnishings.js",
+      "sha256": "0d65b67b04cbbdd1590cb3e9a692b797cd1dc92339b65774ed60a224f74439b9"
+    },
+    {
+      "name": "web/journey/panda-layout.js",
+      "sha256": "48e66140c6a02ab173a386e89f8ccbef5c6912f9c15a5c77c096c2157735da0f"
+    },
+    {
+      "name": "web/journey/panda-materials.js",
+      "sha256": "edf375abb55776f997807baf16fe68968fa9dba4fec50e8711196fa025ebd9fb"
+    },
+    {
+      "name": "web/journey/panda-vehicle.js",
+      "sha256": "8687f3c52e2d615c27006766698151dd16c95f884cdfb5e93c2ba72800b60de3"
+    },
+    {
+      "name": "web/journey/pixel-art.js",
+      "sha256": "7a804aed6571a33b2b1e95234260465fcb53655bceff563bb0b93f31e2a7a5dc"
+    },
+    {
+      "name": "web/journey/presentation.js",
+      "sha256": "71cbfa21c8e1304fd1e3bb4a019b468040a93fdc6aa2727e2a6dc377054ed548"
+    },
+    {
+      "name": "web/journey/style.css",
+      "sha256": "ad1cce03aa847acc3b45be08c18338bc302dc75e71c3e9ba7ee20be8d09b07ac"
+    },
+    {
+      "name": "web/journey/water-session.js",
+      "sha256": "03b9da963c74cee196a1fa5d523117a9f310824f0195933fab4b0db47396fe3e"
+    },
+    {
+      "name": "web/journey/water-view.js",
+      "sha256": "54acb585035cdbea7be7f96e2a90734df8f7e35a945e2d58f72fe86617a6fe8e"
+    },
+    {
+      "name": "web/journey/weather.js",
+      "sha256": "63438d4b22b43a814aeb3ea6c0ce82631d110e98be78cff4d6d8b63dffa57a60"
+    },
+    {
+      "name": "web/playtest-study/feedback.css",
+      "sha256": "92b9f0476624212565728f9be2c3ee7adec101157f789d5ffaf3c2cd45c554b5"
+    },
+    {
+      "name": "web/playtest-study/feedback.js",
+      "sha256": "872ce7cc4f8bb2023dc7f484ce8f718414dc7559b9fdf95065c6d75afcf95fc0"
+    },
+    {
+      "name": "web/playtest-study/index.html",
+      "sha256": "f9279ca6834d89f6fcc81ccc80b2ace48d442edb7d2a8d6958fdd683a65947a2"
+    },
+    {
+      "name": "web/playtest-study/main.js",
+      "sha256": "295c922f06e68f2dbae7838f1ec1e5201fb094d23d963a110f38a012d34d24e5"
+    },
+    {
+      "name": "web/playtest-study/scene.html",
+      "sha256": "7b4896234e085e7583231d8ecf8579eb6da87f98523c31f0fd49a8b3c25f0356"
+    },
+    {
+      "name": "web/playtest-study/style.css",
+      "sha256": "e2bba6d144a01d7594ca3c9b4f72803868f3a5ddf09fe39dbe0bde82f9e3a1a8"
+    }
+  ]
+}

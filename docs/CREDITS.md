@@ -15,7 +15,12 @@ Both font files are unchanged. Their complete original notices ship as
 `site/licenses/barlow.txt` and `site/licenses/space-mono.txt`. The night scene and original identity artwork
 remain all rights reserved. The compiled preview includes the Three.js MIT notice and the Vite core MIT
 notice for its module preload helper. Licence texts were checked locally on 17 October 2026.
-The published preview was compiled with Vite 8.3.4; the table below describes the core repository tooling.
+Journey study 08 is compiled with Vite 8.3.3 from the public `web/` sources. Its cabin, landscape,
+materials and water presentation are original; no manufacturer photographs, reference-game media,
+downloaded car model or music recording is included. Three.js supplies rendering and its geometry helpers.
+Barlow and Space Mono remain unchanged in the surrounding bilingual page. The earlier race assets,
+compiled with Vite 8.3.4, remain served for continuity; their notices are retained. WRAD ARMS is not
+imported by the current journey. The table below describes the core repository tooling.
 The WRAD ARMS archive and its included CC0 notice were checked on 18 October 2026. The adapted mesh
 uses the original articulated hand and fixed arm segments, with a new grip and reach animation.
 The complete notice ships as `site/licenses/wrad-arms.txt`. No animation or model from a closed game

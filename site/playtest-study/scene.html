@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>drops. - The journey</title>
+    <script type="module" crossorigin src="../assets/scene-CuTT1w6n.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/modulepreload-polyfill-P2Xu9kJm.js">
+    <link rel="stylesheet" crossorigin href="../assets/scene-DjKZU9TV.css">
+  </head>
+  <body>
+    <main>
+      <header><button type="button" id="fullscreen" data-text="fullscreen">Full screen</button></header>
+      <section class="stage" data-label="stage" aria-label="The journey from the back seat">
+        <canvas id="scene" tabindex="0" data-label="canvas" aria-label="Drag to look around. You can also use the arrow keys."></canvas>
+        <p id="loading" role="status" data-text="loading">Preparing the cabin...</p>
+      </section>
+      <div class="controls">
+        <button type="button" id="pause" aria-pressed="false" data-text="start">Start</button>
+        <fieldset data-label="gaze" aria-label="Look around">
+          <button type="button" data-view="window" data-text="window">Window</button>
+          <button type="button" data-view="front" data-text="front">Ahead</button>
+          <button type="button" data-view="beside" data-text="beside">Beside you</button>
+          <button type="button" data-view="feet" data-text="feet">Down</button>
+          <button type="button" data-view="back" data-text="back">Behind</button>
+        </fieldset>
+        <button type="button" id="lamp" aria-pressed="false" data-text="lamp">Reading light</button>
+        <button type="button" id="weather" aria-pressed="true" data-text="weather">Overcast sky</button>
+        <label class="motion-choice"><span data-text="motion">Motion</span><select id="capture-mode" data-label="motion" aria-label="Motion"><option value="shutter24" data-text="motion24" selected>24 with gaze blur</option><option value="clear" data-text="motionClear">Clear reference</option></select></label>
+      </div>
+      <p class="guide" data-text="guide">Drag to look around. Use the buttons or arrow keys if you prefer. The journey continues when you look away.</p>
+      <p id="message" role="status" data-text="message">You stay in your seat. No action is needed to continue.</p>
+      <details id="continuity">
+        <summary data-text="yourJourney">Your journey</summary>
+        <p id="save-status" role="status" aria-live="polite" data-text="preparingSave">Preparing local storage...</p>
+        <div class="save-actions"><button type="button" id="save-journey" data-text="save" disabled>Save</button><button type="button" id="load-journey" data-text="load" disabled>Load</button><button type="button" id="new-journey" data-text="new" disabled>New journey</button></div>
+        <p data-text="saveHelp">Saved only in this browser. Loading starts paused. Saving happens during the journey; closing suddenly may lose the last few seconds. Clearing browser data removes your journey.</p>
+      </details>
+      <details id="feedback-scope">
+        <summary data-text="scope">About this version</summary>
+        <p data-text="scopeCurrent">An early, silent journey with a provisional cabin, moving landscape, rain and local save. No score or required action.</p>
+        <p data-text="scopeMissing">People, cassette gestures, music and a story from home to arrival are still being built. The car's shape and materials remain unfinished.</p>
+      </details>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>drops. - risposte ricevute</title>
+    <link rel="stylesheet" href="./owner.css" />
+  </head>
+  <body>
+    <main>
+      <a href="../playtest-study/">Torna alla prova</a>
+      <h1>Risposte ricevute</h1>
+      <p>Importa i file che i partecipanti ti hanno inviato. Questa pagina li legge solo nel tuo browser. Non raccoglie e non invia risposte automaticamente.</p>
+      <p>Le risposte importate restano in questa scheda. Scarica il file completo prima di chiuderla. Le prove del viaggio e i vecchi questionari della corsa restano distinti.</p>
+      <div class="actions">
+        <label class="file-label" for="files">Importa file JSON</label>
+        <input id="files" type="file" accept=".json,application/json" multiple />
+        <button id="export" type="button" disabled>Scarica tutte le risposte</button>
+      </div>
+      <p id="status" role="status">Nessun file importato.</p>
+      <p id="count">0 risposte</p>
+      <div id="responses"></div>
+    </main>
+    <script type="module" src="./owner.js"></script>
+  </body>
+</html>

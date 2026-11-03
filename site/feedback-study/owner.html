@@ -1,5 +1,29 @@
-<!doctype html><html data-feedback-delivery="file" lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>drops. - Raccolta feedback</title>  <script type="module" crossorigin src="../assets/owner-Zco9NC7x.js"></script>
-  <link rel="modulepreload" crossorigin href="../assets/modulepreload-polyfill-P2Xu9kJm.js">
-  <link rel="modulepreload" crossorigin href="../assets/common-BMHiRHOw.js">
-  <link rel="stylesheet" crossorigin href="../assets/common-CgbBhbWY.css">
-<meta name="robots" content="noindex,nofollow"></head><body><main><a class="brand" href="./">drops.</a><p class="eyebrow">RACCOLTA PRIVATA / 17 OTTOBRE 2026</p><h1>Le risposte, insieme.</h1><p class="intro">Raccolta live dal servizio e file ricevuti dai partecipanti. Un solo download contiene tutte le risposte visualizzate, senza duplicare gli stessi invii.</p><form id="connect" hidden><label for="token">Chiave privata di Antonio</label><p class="small">Il servizio la mostra nel Terminale. Non condividerla con chi prova il gioco. Resta solo nella memoria di questa scheda.</p><input type="password" id="token" autocomplete="off"><div class="actions"><button>Collega raccolta live</button><button id="disconnect" type="button" class="secondary">Scollega</button></div></form><div id="status" class="status" role="status" aria-live="polite">Non collegato. Puoi importare i file ricevuti.</div><p class="metric" id="count">0</p><p class="small">risposte uniche visualizzate</p><div class="actions"><button id="export" disabled>Scarica tutto in un file</button><label class="button secondary" for="files">Importa file ricevuti</label><input id="files" type="file" multiple accept=".json,application/json" hidden></div><p class="small">I file importati restano in questa scheda: esportali prima di chiuderla. L'importazione non carica dati al servizio. Un file non valido blocca l'intero gruppo selezionato.</p><section id="summary" aria-label="Conteggi delle risposte"></section><section id="responses" aria-label="Risposte individuali"></section><footer><a href="./">Apri il modulo per chi prova</a><p class="small">Il conteggio indica risposte, non persone verificate. Nessun account o identificatore del partecipante.</p></footer></main></body></html>
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>drops. - risposte ricevute</title>
+    <script type="module" crossorigin src="../assets/owner-B49i2476.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/modulepreload-polyfill-P2Xu9kJm.js">
+    <link rel="modulepreload" crossorigin href="../assets/feedback-B9BXxQJa.js">
+    <link rel="stylesheet" crossorigin href="../assets/owner-BBSEqO0T.css">
+  </head>
+  <body>
+    <main>
+      <a href="../playtest-study/">Torna alla prova</a>
+      <h1>Risposte ricevute</h1>
+      <p>Importa i file che i partecipanti ti hanno inviato. Questa pagina li legge solo nel tuo browser. Non raccoglie e non invia risposte automaticamente.</p>
+      <p>Le risposte importate restano in questa scheda. Scarica il file completo prima di chiuderla. Le prove del viaggio e i vecchi questionari della corsa restano distinti.</p>
+      <div class="actions">
+        <label class="file-label" for="files">Importa file JSON</label>
+        <input id="files" type="file" accept=".json,application/json" multiple />
+        <button id="export" type="button" disabled>Scarica tutte le risposte</button>
+      </div>
+      <p id="status" role="status">Nessun file importato.</p>
+      <p id="count">0 risposte</p>
+      <div id="responses"></div>
+    </main>
+  </body>
+</html>

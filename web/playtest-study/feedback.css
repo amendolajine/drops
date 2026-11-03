@@ -1,0 +1,86 @@
+.journey-feedback {
+  color: #e9e4da;
+  font: inherit;
+  line-height: 1.5;
+  max-width: 44rem;
+}
+
+.journey-feedback h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.journey-feedback p {
+  margin: 0.8rem 0;
+}
+.journey-feedback fieldset {
+  border: 0;
+  border-top: 1px solid #64635c;
+  padding: 1rem 0;
+  margin: 1.25rem 0;
+  min-width: 0;
+}
+.journey-feedback legend {
+  font-weight: 600;
+  padding: 0 0.35rem 0 0;
+}
+.journey-feedback fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+}
+.journey-feedback input {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: 0 0 auto;
+  accent-color: #edcea0;
+}
+.journey-feedback .feedback-note {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.journey-feedback textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  border: 1px solid #929086;
+  border-radius: 0;
+  padding: 0.7rem;
+  color: #f7f0e4;
+  background: #242b2b;
+  font: inherit;
+}
+.journey-feedback button {
+  box-sizing: border-box;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #edcea0;
+  border-radius: 0;
+  color: #181e1e;
+  background: #edcea0;
+  font: inherit;
+  cursor: pointer;
+}
+.journey-feedback :focus-visible {
+  outline: 3px solid #f3d8a9;
+  outline-offset: 4px;
+}
+.journey-feedback .feedback-privacy,
+.journey-feedback .feedback-status {
+  color: #d0c8b9;
+}
+.journey-feedback .feedback-status {
+  min-height: 3em;
+}

@@ -273,3 +273,23 @@ Format: number, date, decision, why, evidence, who decided.
 - Why: a geometrically correct contact and a text notice did not communicate who was acting. Review
   actual approach, contact and withdrawal frames in the real cabin, not only isolated geometry checks.
 - Who: Antonio.
+
+## D030 - 2026-11-03 - Publish the current journey study on the existing playtest link
+- What: replace the race entry at the same personal Pages URL with the current atmosphere-led
+  journey. Keep the earlier simulation, questionnaire versions and asset notices separate.
+- Publish the implemented seated view, continuous rain, reading light, two skies and local resume.
+  The current car is provisional and still fails the intended visual fidelity. People, cassette
+  exchange, soundtrack and a home-to-arrival story are not implemented or implied by this release.
+- Keep bilingual entry and concise scope visible. Feedback concerns looking around, rain visibility,
+  comfort and optional save/resume. Answers are downloaded locally and sent manually by participants.
+  The owner combines files locally, preserving the difference between journey and earlier race studies.
+- Save complete current state with explicit scene compatibility, two local generations and a stale-tab
+  conflict. Loading starts paused. Browser storage may be lost; abrupt closure may lose recent changes.
+  Future scene components must extend the complete save format rather than being silently omitted.
+- Keep the chosen 320x180 rendering and 24-frame gaze exposure. Controls and questions stay outside
+  the rendered scene. Reserve scrollbar space so opening local-save help cannot resize the glass.
+- Build the public pages from public sources, pin output/source hashes and check that Pages files
+  match in CI. Publish only the successful main revision; retain branch protections and file-only feedback.
+- Why: testers holding the existing link should receive the most complete available progress, with
+  clear limits, rather than keep testing an earlier game direction.
+- Who: Antonio.

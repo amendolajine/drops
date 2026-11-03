@@ -1,0 +1,67 @@
+// One coordinate system for the complete vehicle. Forward is -Z and ground is Y=0.
+// Published exterior dimensions: Fiat September 1988 handbook, printed page 102.
+// Interior anchors are authored fits to the photographed 1988 car and workshop drawings.
+export const PANDA = Object.freeze({
+  version: '1988 1000 4x4 visual reconstruction',
+  exterior: Object.freeze({
+    length: 3.408,
+    width: 1.5,
+    height: 1.468,
+    wheelbase: 2.17,
+    frontAxleZ: -0.9,
+    rearAxleZ: 1.27,
+    frontZ: -1.528,
+    rearZ: 1.88,
+    frontTrack: 1.254,
+    rearTrack: 1.258,
+    wheelRadius: 0.275,
+  }),
+  cabin: Object.freeze({
+    floor: 0.3,
+    roof: 1.435,
+    bodyBelt: 0.91,
+    innerWidth: 1.206,
+    frontSeatWidth: 0.438,
+    frontSeatCenters: 0.295,
+    frontHipZ: Math.LOG10E,
+    frontCushionTop: 0.48,
+    frontSeatFrontZ: -0.06,
+    frontSeatRearZ: 0.408,
+    frontBackTopZ: 0.648,
+    frontBackTopY: 1.04,
+    rearSeatTop: 0.53,
+    rearSeatFrontZ: 0.78,
+    rearBackBaseZ: 1.24,
+    rearBackTopZ: 1.43,
+    rearBackTopY: 0.995,
+    rearBenchWidth: 1.19,
+  }),
+  eye: Object.freeze([0.28, 1.1, 1.17]),
+  player: Object.freeze({
+    hip: [0.28, 0.55, 1.1],
+    knees: [
+      [0.17, 0.565, 0.805],
+      [0.39, 0.565, 0.805],
+    ],
+    feet: [
+      [0.175, 0.315, 0.735],
+      [0.395, 0.315, 0.735],
+    ],
+    shoulder: [0.145, 0.875, 1.16],
+  }),
+  cargo: Object.freeze({
+    floorY: 0.49,
+    frontZ: 1.3,
+    rearZ: 1.84,
+    widthBetweenArches: 0.978,
+    upperWidth: 1.262,
+    shelfY: 0.94,
+    shelfFrontZ: Math.LOG2E,
+    shelfRearZ: 1.705,
+  }),
+  dashboard: Object.freeze({ translation: [0, 0, 0.28], steeringCenter: [-0.295, 0.906, -0.065] }),
+  radio: Object.freeze({ center: [-0.045, 0.735, -0.15], width: 0.19, height: 0.061, depth: 0.11 }),
+  landmarks: Object.freeze({ bPillarZ: 0.665, aRoofZ: -0.085, rearRoofZ: 1.38, hatchBeltZ: 1.8 }),
+  referenceScope:
+    'Exterior dimensions documented; interior surfaces, seat adjustment, child posture and hidden structure are inferred fits, not a surveyed Fiat replica',
+});

@@ -36,6 +36,10 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run size
+      - run: npm run build:playtest
+      - run: npm run check:playtest
+      - name: Verify the published journey matches its source
+        run: git diff --exit-code -- site
   golden-browsers:
     # Same golden seeds in Chromium, Firefox and WebKit, compared with Node (map 9.3 rule 7).
     runs-on: ubuntu-latest
