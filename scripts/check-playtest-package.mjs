@@ -13,7 +13,7 @@ function sameHash(body, wanted) {
 }
 assert.throws(() => sameHash(Buffer.from('deliberate alteration'), '0'.repeat(64)));
 assert.equal(manifest.schema, 'drops-release-1');
-assert.equal(manifest.version, 'journey-v8-2026-11-03');
+assert.equal(manifest.version, 'journey-v9-2026-11-03');
 let compressed = 0;
 for (const file of manifest.files) {
   assert(!file.name.includes('..') && !file.name.startsWith('/'), 'Invalid output path');
@@ -24,7 +24,18 @@ for (const file of manifest.files) {
 }
 for (const source of manifest.sources) sameHash(await readFile(join(root, source.name)), source.sha256);
 assert(compressed <= 300 * 1024, 'Current journey JavaScript exceeds the 300 KiB compressed budget');
-for (const name of ['playtest-study/index.html', 'playtest-study/scene.html', 'feedback-study/owner.html'])
+for (const name of [
+  'playtest-study/index.html',
+  'playtest-study/scene.html',
+  'feedback-study/owner.html',
+  'map-data/index.html',
+  'map-data/bari-coast.geojson',
+  'map-data/bari-data.js',
+  'map-data/bari-world.js',
+  'map-data/route-motion.js',
+  'map-data/NOTICE.txt',
+  'map-data/ODbL-1.0.txt',
+])
   assert(
     manifest.files.some((file) => file.name === name),
     'A required page is missing',

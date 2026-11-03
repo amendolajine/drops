@@ -84,7 +84,7 @@ export function createContinuityController({
         note(
           found.issues.length
             ? 'Salvataggio non leggibile. Puoi iniziare un nuovo viaggio.'
-            : 'Non hai ancora salvato un viaggio.',
+            : 'Non hai ancora salvato questo viaggio.',
         );
     } catch (error) {
       lastError = String(error.message || error);

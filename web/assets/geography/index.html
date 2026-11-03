@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>drops. - Bari geographic data</title>
+    <style>body{font:18px/1.55 system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;background:#192c2c;color:#e1dfca}a{color:inherit;text-underline-offset:4px;display:inline-block;padding:10px 0;min-height:24px}h1{font-weight:400;line-height:1.2}li{margin:8px 0}</style>
+  </head>
+  <body>
+    <p><a href="../playtest-study/">Return to the journey</a></p>
+    <h1>Bari geographic data</h1>
+    <p>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>. Contains information from OpenStreetMap, made available under the <a href="./ODbL-1.0.txt">Open Database License 1.0</a>.</p>
+    <p>The selected route and coastline data, including their adaptations, are offered here free of charge in machine-readable form. These are modern geographic data acquired on 3 November 2026. They do not establish how the road, buildings or traffic looked in the 1990s.</p>
+    <ul>
+      <li><a href="./bari-coast.geojson" download>Source coordinates, identifiers, query and provenance</a></li>
+      <li><a href="./bari-data.js" download>Selected coordinates used by the renderer</a></li>
+      <li><a href="./bari-world.js" download>Projection, clipping, curve and geometry source</a></li>
+      <li><a href="./route-motion.js" download>Vehicle motion source</a></li>
+      <li><a href="./NOTICE.txt">Data notice and scope</a></li>
+    </ul>
+    <p>The longitude and latitude values are projected into local metres around the first route coordinate. The route is densified at no more than four metres between controls and interpolated with a non-looping centripetal curve. The same curve supplies the road and vehicle pose. The coastline is clipped; a simple inland closure forms the land surface. The linked source provides the complete transformations.</p>
+    <p>Road widths, vertical levels and building forms are fitting assumptions. Surface designs and rendering code are original work, separate from the geographic database. This is an early coastal study, not a historical or surveyed reconstruction.</p>
+    <p><a href="../CREDITS.txt">All credits</a></p>
+  </body>
+</html>

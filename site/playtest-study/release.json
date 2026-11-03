@@ -1,10 +1,12 @@
 {
   "schema": "drops-release-1",
-  "version": "journey-v8-2026-11-03",
+  "version": "journey-v9-2026-11-03",
   "features": [
     "seated-gaze",
-    "continuous-rain",
-    "reading-light",
+    "six-pane-continuous-rain",
+    "shadowed-reading-light",
+    "bari-osm-coast-with-stop",
+    "open-geodata-and-transformation-source",
     "two-skies",
     "local-resume",
     "bilingual-file-feedback"
@@ -16,19 +18,19 @@
       "sha256": "95aa02c7c43096e0dd44d787ba6216864a67157e402adab59b35572e0c1577ea"
     },
     {
-      "name": "assets/feedback-B9BXxQJa.js",
-      "bytes": 10028,
-      "sha256": "7ebd35bc29aa6c684c6e518b0675c6fc77b06ee374c95f2796fd9943500a41ad"
+      "name": "assets/feedback-BNQtN8fq.js",
+      "bytes": 10134,
+      "sha256": "6f4173f60b10277021f64bcb5160029415991e2930e6f2b249cd5fed169e70b0"
     },
     {
-      "name": "assets/index-Dd0L40ao.css",
-      "bytes": 4646,
-      "sha256": "3862a0d3c3b3c3bd473910bbe391c240fb87dcf38dc3d2067a5d1a9aeadd7fe0"
+      "name": "assets/index-BcJcd4_s.css",
+      "bytes": 4689,
+      "sha256": "2e059c8f36bc42c09207007d74033f7f988fa667827ef6216538204f73ce34b3"
     },
     {
-      "name": "assets/index-DMBnReWR.js",
-      "bytes": 3088,
-      "sha256": "3be0813b673339473b2d71f945fc97753f5d168c65a481551c9f75aef24f46c0"
+      "name": "assets/index-nj8qq7hP.js",
+      "bytes": 3175,
+      "sha256": "216beac48e7f9e0244138476455beac8b460fb0d5b61651b6711f42e204b246b"
     },
     {
       "name": "assets/modulepreload-polyfill-P2Xu9kJm.js",
@@ -36,24 +38,24 @@
       "sha256": "418c206484b89b68ef5f067277831e583fc9193a62aadf4de269acaaeb12a85f"
     },
     {
-      "name": "assets/owner-B49i2476.js",
-      "bytes": 3979,
-      "sha256": "7fb6759b0a934d68f23c74cd74cd232dbb4fef79ffc80d31f3b80513e3335e04"
-    },
-    {
       "name": "assets/owner-BBSEqO0T.css",
       "bytes": 1354,
       "sha256": "189a95018a19cd6b8d199957f83ad385856b7c150f52b7c8e1445bd2b75a853e"
     },
     {
-      "name": "assets/scene-CuTT1w6n.js",
-      "bytes": 680041,
-      "sha256": "52311eba4b42dd10aaeb36100b73f75b0cb75664eda512c445795c3556c828df"
+      "name": "assets/owner-BnwVD5xR.js",
+      "bytes": 4108,
+      "sha256": "aaf981c63685c0b6df2735e0d577450ba4d2132da8db980b0300bbddf29c9ab9"
     },
     {
-      "name": "assets/scene-DjKZU9TV.css",
-      "bytes": 2549,
-      "sha256": "c19b16fcd6a9b8af7df4ad2d36475550b8705a0b4ec867845ec9a8652fd627ce"
+      "name": "assets/scene-3xlF4kJQ.css",
+      "bytes": 2756,
+      "sha256": "fa178da2322ea8312c5488893e95f1a2eb1ae9698485f145fa126faf73751e35"
+    },
+    {
+      "name": "assets/scene-r0tLgVx-.js",
+      "bytes": 696070,
+      "sha256": "c9044969c004cd25d04968b873d594014b7595236090f64aeed1cc648595b928"
     },
     {
       "name": "assets/SpaceMono-Regular-DFDYVJRE.ttf",
@@ -63,17 +65,52 @@
     {
       "name": "feedback-study/owner.html",
       "bytes": 1473,
-      "sha256": "5192ca2dedad48d3c66a594832634f0fdb1d707ae62c79391de4e74d2e73b34e"
+      "sha256": "0fce88e26fe9f9df92ab30d76cd157156b363eb9718b1a0fa9b1f677cb07592b"
     },
     {
       "name": "playtest-study/index.html",
-      "bytes": 2892,
-      "sha256": "5f40bc05499ff82a0067bfaf88f84fbb4052132d457eac25356ecf3057a04ff0"
+      "bytes": 3073,
+      "sha256": "d68c022c8c6af4286cd4c3c924f96bf9a86b650af2e331fe6af0eead7b6f6258"
     },
     {
       "name": "playtest-study/scene.html",
-      "bytes": 3539,
-      "sha256": "1bf4c25fe25597203dac46fa7173cece255773914ada8a071641718b42b73143"
+      "bytes": 3843,
+      "sha256": "3667495a42dca8a254eeb40d55afd9c28d68d3c45876131ee49a3bc8bb8584ed"
+    },
+    {
+      "name": "map-data/index.html",
+      "bytes": 2303,
+      "sha256": "123099ef7de953219f3d9f9528d05d72670c935c7ca020661032ac8ea8043385"
+    },
+    {
+      "name": "map-data/bari-coast.geojson",
+      "bytes": 17817,
+      "sha256": "9a65e9edf47f19d8c6fc9eec1080147c6b2c3daaab9e9cd7394a21eb41a07435"
+    },
+    {
+      "name": "map-data/bari-data.js",
+      "bytes": 6195,
+      "sha256": "91fad8035e1ca741cab3932485dc76c292c67a802d9caf26d39ddb692dec8e32"
+    },
+    {
+      "name": "map-data/NOTICE.txt",
+      "bytes": 1676,
+      "sha256": "d87ca0a77ec207dd511fbae1dbab33ec29d48449fe6c14ab8274483a666f6822"
+    },
+    {
+      "name": "map-data/ODbL-1.0.txt",
+      "bytes": 25043,
+      "sha256": "aa687d7d8e6f59e87980cd43d5023c66d2de276703f9e3eacc1e4ecdcab49cb0"
+    },
+    {
+      "name": "map-data/bari-world.js",
+      "bytes": 17570,
+      "sha256": "2c4a0d5210a0f170970c417961cd6505e1d3eda0d6b50317ab38222339c18721"
+    },
+    {
+      "name": "map-data/route-motion.js",
+      "bytes": 1260,
+      "sha256": "8a3ac307d67d21c6901076413c4d7ddea7264dd01c794038d56b8b39e29a12cc"
     }
   ],
   "sources": [
@@ -91,11 +128,31 @@
     },
     {
       "name": "tools/build-playtest.mjs",
-      "sha256": "02b10df1fc712874481fb52a60996342cbe2813ac755ff74b43d45e3a6d62b93"
+      "sha256": "f404b792375fde484b581565f9730e40703f3454d5d1138cf6b937bfd873c660"
     },
     {
       "name": "web/assets/Barlow-Regular.ttf",
       "sha256": "95aa02c7c43096e0dd44d787ba6216864a67157e402adab59b35572e0c1577ea"
+    },
+    {
+      "name": "web/assets/geography/bari-coast.geojson",
+      "sha256": "9a65e9edf47f19d8c6fc9eec1080147c6b2c3daaab9e9cd7394a21eb41a07435"
+    },
+    {
+      "name": "web/assets/geography/bari-data.js",
+      "sha256": "91fad8035e1ca741cab3932485dc76c292c67a802d9caf26d39ddb692dec8e32"
+    },
+    {
+      "name": "web/assets/geography/index.html",
+      "sha256": "123099ef7de953219f3d9f9528d05d72670c935c7ca020661032ac8ea8043385"
+    },
+    {
+      "name": "web/assets/geography/NOTICE.txt",
+      "sha256": "d87ca0a77ec207dd511fbae1dbab33ec29d48449fe6c14ab8274483a666f6822"
+    },
+    {
+      "name": "web/assets/geography/ODbL-1.0.txt",
+      "sha256": "aa687d7d8e6f59e87980cd43d5023c66d2de276703f9e3eacc1e4ecdcab49cb0"
     },
     {
       "name": "web/assets/SpaceMono-Regular.ttf",
@@ -111,11 +168,15 @@
     },
     {
       "name": "web/feedback-study/owner.js",
-      "sha256": "53080710492b7e2fe358e977c9e833319c62471b038e115723fe572e634c18ab"
+      "sha256": "1f9c2322f4425ae7240d4aef199c92bb0c04e9ceb11bd7035b04fd8649532f88"
+    },
+    {
+      "name": "web/journey/bari-world.js",
+      "sha256": "2c4a0d5210a0f170970c417961cd6505e1d3eda0d6b50317ab38222339c18721"
     },
     {
       "name": "web/journey/cabin-art.js",
-      "sha256": "19ec9deea18f1170d35f8ed97067fbac78a2c60e12be8ac594289338454881df"
+      "sha256": "c563b14baeaae2f6fdc4beb52fc89addf2a62e4f5ff81a46147ba002b4b3bcaf"
     },
     {
       "name": "web/journey/cabin.js",
@@ -127,19 +188,19 @@
     },
     {
       "name": "web/journey/continuity-controller.js",
-      "sha256": "f37a8ce75a5e0a58d63a59ed247eee4bf572bab616cdc5efd88fcf73bb54f2c0"
+      "sha256": "27d3d7c644e7328e3d9464d021dbfdc3b97f0bbaf1b0c45448ecb88426f933c9"
     },
     {
       "name": "web/journey/glass.js",
-      "sha256": "9cd2aaee4dbfd7c2983c7c5f544c4be42e625bd1ec2067718cca907f81c69ab0"
+      "sha256": "7d181dc29106010eed6f4342a1fa2bb490eda3fe6bec9134cd797e0e939d409f"
     },
     {
       "name": "web/journey/journey-state.js",
-      "sha256": "f92b4b6922a5b278156a5dc977d8956bee84338e85bdb0d3aefdeed21948c724"
+      "sha256": "4c535f5d6facdeed9679b51f74a6c86b15c09f4ac39bddab3ae100d1ec7adeed"
     },
     {
       "name": "web/journey/journey-store.js",
-      "sha256": "762f784db15847b67f2163742bc7e01276731640d58c2322575a5ac2188d1c60"
+      "sha256": "32b59ce980cab9a08c26ccb743749217432c3beb0db0683db1a133cb495d986b"
     },
     {
       "name": "web/journey/landscape.js",
@@ -147,15 +208,15 @@
     },
     {
       "name": "web/journey/language.js",
-      "sha256": "36af28cec52641bd65ae965759625dce04abcf1abe7f5f721c829dadf69126df"
+      "sha256": "7618b1246a90e84b1f30c6d4f808d6ffc459908c58abc7fd3aa66f25e2954a04"
     },
     {
       "name": "web/journey/main.js",
-      "sha256": "3cc1af6267df360de1775ebdccdbc299fb7ca3d001c46e8fa526dabe137c5745"
+      "sha256": "0e0d4421dfa8572aaf672e587051b545e409d7f066f724cda54c3dbb68837be4"
     },
     {
       "name": "web/journey/panda-art.js",
-      "sha256": "da18075de8a31a2b3b219b1adaa4530671e0b4f5efb2d5bbc418a3d7e81f6d5a"
+      "sha256": "f1c2c3ced70c9bb63df980bb2a019892ce4775149b1a20a577ac201cac09fd8a"
     },
     {
       "name": "web/journey/panda-furnishings.js",
@@ -171,19 +232,31 @@
     },
     {
       "name": "web/journey/panda-vehicle.js",
-      "sha256": "8687f3c52e2d615c27006766698151dd16c95f884cdfb5e93c2ba72800b60de3"
+      "sha256": "1c698ebec73c79408c2407832ee67023ab57d2963f5327cc02aef54d5ff38fc6"
     },
     {
       "name": "web/journey/pixel-art.js",
-      "sha256": "7a804aed6571a33b2b1e95234260465fcb53655bceff563bb0b93f31e2a7a5dc"
+      "sha256": "73a942f880f5abb14389ded719d4423a199d3668a0e0c6283cd073874a0f0e66"
     },
     {
       "name": "web/journey/presentation.js",
       "sha256": "71cbfa21c8e1304fd1e3bb4a019b468040a93fdc6aa2727e2a6dc377054ed548"
     },
     {
+      "name": "web/journey/rain-field.js",
+      "sha256": "ed70918996aea0c1a67350cd6aef3863cbe163e134d742a8868b1dcbb8e2a398"
+    },
+    {
+      "name": "web/journey/reading-light.js",
+      "sha256": "49ec45f8152724e1dd7063c1e02e0dea4a7ad09209f5e4421218974a3582a788"
+    },
+    {
+      "name": "web/journey/route-motion.js",
+      "sha256": "8a3ac307d67d21c6901076413c4d7ddea7264dd01c794038d56b8b39e29a12cc"
+    },
+    {
       "name": "web/journey/style.css",
-      "sha256": "ad1cce03aa847acc3b45be08c18338bc302dc75e71c3e9ba7ee20be8d09b07ac"
+      "sha256": "d78b82b54d97009b94116124ccaf334b98291a2bed662ae41945bbfb7a46b75b"
     },
     {
       "name": "web/journey/water-session.js",
@@ -191,11 +264,11 @@
     },
     {
       "name": "web/journey/water-view.js",
-      "sha256": "54acb585035cdbea7be7f96e2a90734df8f7e35a945e2d58f72fe86617a6fe8e"
+      "sha256": "e0b3583bb9ec076dbef7dd123bf6fae865f5bc1b73ada24e8392b77b37f89e17"
     },
     {
       "name": "web/journey/weather.js",
-      "sha256": "63438d4b22b43a814aeb3ea6c0ce82631d110e98be78cff4d6d8b63dffa57a60"
+      "sha256": "189e64dbf6ba3185e9bca89f48d315fd17ac64b37c456242c0ecba6ab6e74d40"
     },
     {
       "name": "web/playtest-study/feedback.css",
@@ -203,23 +276,23 @@
     },
     {
       "name": "web/playtest-study/feedback.js",
-      "sha256": "872ce7cc4f8bb2023dc7f484ce8f718414dc7559b9fdf95065c6d75afcf95fc0"
+      "sha256": "c34e23888949c1905e2268da31de94a2006aa9cc6a40029e080d89aa8a9a0d62"
     },
     {
       "name": "web/playtest-study/index.html",
-      "sha256": "f9279ca6834d89f6fcc81ccc80b2ace48d442edb7d2a8d6958fdd683a65947a2"
+      "sha256": "6e161edc2f2be7cb19638b8f5d3ba1fd44d3de42a6cd5ef369d46300e836d8ce"
     },
     {
       "name": "web/playtest-study/main.js",
-      "sha256": "295c922f06e68f2dbae7838f1ec1e5201fb094d23d963a110f38a012d34d24e5"
+      "sha256": "273047ab8589377c03f5f08f5f279c44a6b555427437a50c90d7d8df2f3f469c"
     },
     {
       "name": "web/playtest-study/scene.html",
-      "sha256": "7b4896234e085e7583231d8ecf8579eb6da87f98523c31f0fd49a8b3c25f0356"
+      "sha256": "d7ed1e802ea7fdc33c63ef30032a7ad4a46a84be05bf3e47185eef894226f295"
     },
     {
       "name": "web/playtest-study/style.css",
-      "sha256": "e2bba6d144a01d7594ca3c9b4f72803868f3a5ddf09fe39dbe0bde82f9e3a1a8"
+      "sha256": "1472484ac105882be7448ac88628d63cd2f57fff7d8c82a2c8a779971812287a"
     }
   ]
 }

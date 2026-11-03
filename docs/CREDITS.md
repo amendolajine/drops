@@ -1,7 +1,9 @@
 # Credits
 
 Third-party material used by drops. Runtime notices ship in `site/CREDITS.txt` and `site/licenses/`.
-Rule (the project rules file): only original work or CC0 / MIT / BSD / Apache-2.0 / OFL.
+Rule (the project rules file): original work or CC0 / MIT / BSD / Apache-2.0 / OFL.
+Antonio approved a specific exception on 3 November 2026 for OpenStreetMap geographic data under
+the Open Database License 1.0. This exception does not cover other assets or licences.
 
 ## Assets in the game (art, sound, fonts, data)
 
@@ -10,14 +12,21 @@ Rule (the project rules file): only original work or CC0 / MIT / BSD / Apache-2.
 | Barlow Regular | The Barlow Project Authors | https://github.com/jpt/barlow | SIL Open Font License 1.1 | Interface text and controls |
 | Space Mono Regular | The Space Mono Project Authors | https://github.com/googlefonts/spacemono | SIL Open Font License 1.1 | Wordmark and short headings |
 | WRAD ARMS mesh, rig and pale skin texture | wriks | https://wriks.itch.io/wrad-arms | CC0 1.0 Universal | Adapted first-person arm and rival's tapping arm |
+| Selected Bari route and coastline coordinates | OpenStreetMap contributors | https://www.openstreetmap.org/copyright | Open Database License 1.0 | Coastal world study 09 |
 
 Both font files are unchanged. Their complete original notices ship as
 `site/licenses/barlow.txt` and `site/licenses/space-mono.txt`. The night scene and original identity artwork
 remain all rights reserved. The compiled preview includes the Three.js MIT notice and the Vite core MIT
 notice for its module preload helper. Licence texts were checked locally on 17 October 2026.
-Journey study 08 is compiled with Vite 8.3.3 from the public `web/` sources. Its cabin, landscape,
+Journey study 09 is compiled with Vite 8.3.3 from the public `web/` sources. Its cabin, landscape forms,
 materials and water presentation are original; no manufacturer photographs, reference-game media,
 downloaded car model or music recording is included. Three.js supplies rendering and its geometry helpers.
+The selected geographic data and adaptations remain under the Open Database License 1.0, separate
+from original art and code. Visible attribution links to OpenStreetMap and `site/map-data/` offers
+the selected machine-readable dataset, source query, identifiers, licence, notice and complete
+transformation source. Roads and coastline describe modern source geography, not a verified
+1990s reconstruction. Street widths, heights, building forms and vertical levels are assumptions.
+Study 08 remains available separately, with its original sources and local-save namespace.
 Barlow and Space Mono remain unchanged in the surrounding bilingual page. The earlier race assets,
 compiled with Vite 8.3.4, remain served for continuity; their notices are retained. WRAD ARMS is not
 imported by the current journey. The table below describes the core repository tooling.

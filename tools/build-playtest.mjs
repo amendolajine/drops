@@ -20,7 +20,7 @@ try {
 const hash = (body) => createHash('sha256').update(body).digest('hex');
 function assertSafe(name, text = '') {
   assert(
-    /^(?:(?:playtest-study\/(?:index|scene)|feedback-study\/owner)\.html|assets\/[A-Za-z0-9_.-]+\.(?:js|css|ttf))$/.test(
+    /^(?:(?:playtest-study\/(?:index|scene)|feedback-study\/owner)\.html|assets\/[A-Za-z0-9_.-]+\.(?:js|css|ttf)|map-data\/(?:index\.html|bari-coast\.geojson|bari-data\.js|bari-world\.js|route-motion\.js|NOTICE\.txt|ODbL-1\.0\.txt))$/.test(
       name,
     ),
     'Unexpected release file',
@@ -69,6 +69,21 @@ for (const file of await entries(out)) {
   await copyFile(file.path, join(site, file.name));
   files.push({ name: file.name, bytes: body.length, sha256: hash(body) });
 }
+for (const [source, name] of [
+  ['web/assets/geography/index.html', 'map-data/index.html'],
+  ['web/assets/geography/bari-coast.geojson', 'map-data/bari-coast.geojson'],
+  ['web/assets/geography/bari-data.js', 'map-data/bari-data.js'],
+  ['web/assets/geography/NOTICE.txt', 'map-data/NOTICE.txt'],
+  ['web/assets/geography/ODbL-1.0.txt', 'map-data/ODbL-1.0.txt'],
+  ['web/journey/bari-world.js', 'map-data/bari-world.js'],
+  ['web/journey/route-motion.js', 'map-data/route-motion.js'],
+]) {
+  const body = await readFile(join(root, source));
+  assertSafe(name, body.toString('utf8'));
+  await mkdir(dirname(join(site, name)), { recursive: true });
+  await copyFile(join(root, source), join(site, name));
+  files.push({ name, bytes: body.length, sha256: hash(body) });
+}
 const sources = [];
 for (const file of await entries(join(root, 'web'), root))
   sources.push({ name: file.name, sha256: hash(await readFile(file.path)) });
@@ -77,11 +92,13 @@ for (const name of ['src/sim/rng.ts', 'src/sim/fmath.ts', 'package-lock.json', '
 sources.sort((a, b) => a.name.localeCompare(b.name, 'en'));
 const manifest = {
   schema: 'drops-release-1',
-  version: 'journey-v8-2026-11-03',
+  version: 'journey-v9-2026-11-03',
   features: [
     'seated-gaze',
-    'continuous-rain',
-    'reading-light',
+    'six-pane-continuous-rain',
+    'shadowed-reading-light',
+    'bari-osm-coast-with-stop',
+    'open-geodata-and-transformation-source',
     'two-skies',
     'local-resume',
     'bilingual-file-feedback',

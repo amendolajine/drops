@@ -1,5 +1,10 @@
 export let locale = new URLSearchParams(location.search).get('lang') === 'it' ? 'it' : 'en';
 const labels = {
+  mapData: ['Data and changes', 'Dati e modifiche'],
+  previousJourney: [
+    'Open the previous journey and its saves',
+    'Apri il viaggio precedente e i suoi salvataggi',
+  ],
   fullscreen: ['Full screen', 'Schermo intero'],
   stage: ['The journey from the back seat', 'Il viaggio dal sedile posteriore'],
   canvas: [
@@ -38,12 +43,12 @@ const labels = {
   ],
   scope: ['About this version', 'Questa versione'],
   scopeCurrent: [
-    'An early, silent journey with a provisional cabin, moving landscape, rain and local save. No score or required action.',
-    'Un primo viaggio senza suono, con abitacolo provvisorio, paesaggio in movimento, pioggia e salvataggio locale. Nessun punteggio o azione obbligatoria.',
+    'Try the rain on all six panes, the cabin light and the coastal route. The five-minute drive stops at the end; you can keep looking around. The scenery near Piazza Diaz is a first proposal; other buildings are rough volumes.',
+    'Osserva pioggia sui sei vetri, luce interna e percorso costiero. La corsa dura circa cinque minuti e poi si ferma; puoi continuare a guardarti intorno. Il tratto vicino a Piazza Diaz è una prima proposta; gli altri edifici sono volumi abbozzati.',
   ],
   scopeMissing: [
-    "People, cassette gestures, music and a story from home to arrival are still being built. The car's shape and materials remain unfinished.",
-    'Persone, gesti con la cassetta, musica e storia da casa all’arrivo sono ancora da costruire. Forma e materiali dell’auto sono incompleti.',
+    "People, cassette gestures, music and a story from home to arrival are still being built. The car's shape and materials remain unfinished. Windshield wipers are not implemented yet.",
+    'Persone, gesti con la cassetta, musica e storia da casa all’arrivo sono ancora da costruire. Forma e materiali dell’auto sono incompleti. I tergicristalli non sono ancora presenti.',
   ],
 };
 const statuses = {
@@ -68,7 +73,7 @@ const statuses = {
     'A saved journey is available. Choose Load or New journey.',
   'Salvataggio non leggibile. Puoi iniziare un nuovo viaggio.':
     'The save could not be read. You can start a new journey.',
-  'Non hai ancora salvato un viaggio.': 'You have not saved a journey yet.',
+  'Non hai ancora salvato questo viaggio.': 'You have not saved this journey yet.',
   'Salvataggio locale non disponibile. Puoi comunque viaggiare.':
     'Local saving is unavailable. You can still travel.',
   'Un’altra scheda ha salvato. Carica quel viaggio o inizia da capo.':

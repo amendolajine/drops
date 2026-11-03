@@ -9,7 +9,7 @@ export class SaveConflictError extends Error {
 }
 export function createJourneyStore({
   accept,
-  dbName = 'drops-journey-v8-1',
+  dbName = 'drops-journey-v9-bari-1',
   database = globalThis.indexedDB,
   cryptoApi = globalThis.crypto,
 } = {}) {

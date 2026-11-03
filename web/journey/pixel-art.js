@@ -395,7 +395,7 @@ export function applyPixelArt(cabinGroup, landscapeGroupOrScene) {
   }
   function visit(root) {
     root.traverse((object) => {
-      if (!object.isMesh || visited.has(object)) return;
+      if (!object.isMesh || visited.has(object) || object.userData.authoredWorld) return;
       visited.add(object);
       if (object.name === 'reading-lamp') {
         changes.lampPreserved++;

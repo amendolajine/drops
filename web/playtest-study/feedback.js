@@ -1,5 +1,6 @@
 export const FEEDBACK_SCHEMA = 'drops-journey-feedback-1';
-export const STUDY_VERSION = 'journey-v8-2026-11-03';
+export const STUDY_VERSION = 'journey-v9-2026-11-03';
+const ACCEPTED_VERSIONS = [STUDY_VERSION, 'journey-v8-2026-11-03'];
 export const COLLECTION_SCHEMA = 'drops-feedback-collection-1';
 const DRAFT_KEY = `drops-feedback-draft:${STUDY_VERSION}`;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
@@ -21,7 +22,7 @@ const COPY = {
         ['Comfortable', 'Some strain', 'Uncomfortable', 'I did not try'],
       ],
       rain: [
-        'Could you see the rain on the side window?',
+        'Could you see rain when looking at different windows?',
         ['Clearly', 'Some of it', 'It was hard to see', 'I did not look'],
       ],
       resume: [
@@ -29,7 +30,7 @@ const COPY = {
         ['It resumed as I left it', 'Something had changed', 'I could not resume', 'I did not try'],
       ],
     },
-    happened: 'What happened? (optional)',
+    happened: 'What did you notice about the light, sky or seafront? (optional)',
     change: 'What would you change? (optional)',
     notes: 'Please leave out names and contact details. Up to 1,500 characters per note.',
     download: 'Download feedback file',
@@ -52,7 +53,7 @@ const COPY = {
         ['A mio agio', 'Un po’ affaticato', 'A disagio', 'Non ho provato'],
       ],
       rain: [
-        'Riuscivi a vedere la pioggia sul finestrino laterale?',
+        'Riuscivi a vedere le gocce guardando i diversi vetri?',
         ['Chiaramente', 'Solo in parte', 'Era difficile vederla', 'Non ho guardato'],
       ],
       resume: [
@@ -65,7 +66,7 @@ const COPY = {
         ],
       ],
     },
-    happened: 'Cosa è successo? (facoltativo)',
+    happened: 'Cosa hai notato di luce, cielo o lungomare? (facoltativo)',
     change: 'Cosa cambieresti? (facoltativo)',
     notes: 'Non inserire nomi o contatti. Al massimo 1.500 caratteri per nota.',
     download: 'Scarica il file delle risposte',
@@ -126,7 +127,7 @@ export function validateJourneyResponse(value) {
   if (
     !exact(value, ['schema', 'studyVersion', 'language', 'sessionId', 'timestamp', 'answers']) ||
     value.schema !== FEEDBACK_SCHEMA ||
-    value.studyVersion !== STUDY_VERSION ||
+    !ACCEPTED_VERSIONS.includes(value.studyVersion) ||
     !['it', 'en'].includes(value.language) ||
     typeof value.sessionId !== 'string' ||
     !UUID.test(value.sessionId) ||
@@ -135,7 +136,7 @@ export function validateJourneyResponse(value) {
     throw Error('Invalid or unsupported journey feedback.');
   return {
     schema: FEEDBACK_SCHEMA,
-    studyVersion: STUDY_VERSION,
+    studyVersion: value.studyVersion,
     language: value.language,
     sessionId: value.sessionId,
     timestamp: value.timestamp,

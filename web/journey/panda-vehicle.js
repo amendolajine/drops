@@ -3,6 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { createPandaFurniture } from './panda-furnishings.js';
 import { PANDA } from './panda-layout.js';
 import { createPandaMaterials } from './panda-materials.js';
+import { createReadingLight } from './reading-light.js';
 
 export const CABIN = Object.freeze({
   innerWidth: PANDA.cabin.innerWidth,
@@ -583,11 +584,8 @@ export function createPandaCabin() {
     box([0.055, 0.105, 0.145], [side * 0.775, 1.005, -0.335], m.dark, group, 0.016, `outside-mirror-${side}`);
     rod([side * Math.LN2, 0.98, -0.32], [side * 0.755, 0.98, -0.32], 0.012, m.dark);
   }
-  const lamp = box([0.09, 0.012, 0.05], [0, 1.415, 0.56], m.lamp, group, 0.006, 'reading-lamp'),
-    lampLight = new T.PointLight('#f0d6a6', 0, 0.9, 2);
-  lampLight.position.set(0, 1.382, 0.56);
-  group.add(lampLight);
-  interactables.push({ root: lamp, kind: 'lamp' });
+  const readingLight = createReadingLight(group, m.lamp);
+  interactables.push({ root: readingLight.group, kind: 'lamp' });
   const ownLegs = new T.Group();
   ownLegs.name = 'player-own-legs';
   group.add(ownLegs);
@@ -665,7 +663,7 @@ export function createPandaCabin() {
     viewTargets: {
       exchange: [0, 0.75, 0.85],
       cassette: [0.02, 0.54, 1.08],
-      lamp: [0, 1.415, 0.56],
+      lamp: readingLight.group.position.toArray(),
       legs: [0.28, 0.47, 0.9],
       floor: [0, 0.33, Math.LN2],
       cargo: [0, 0.72, 1.65],
@@ -680,7 +678,7 @@ export function createPandaCabin() {
     toggle(kind) {
       if (kind === 'lamp') {
         lampOn = !lampOn;
-        lampLight.intensity = lampOn ? 1 : 0;
+        readingLight.setOn(lampOn);
       }
       return { lampOn, cassetteFlipped: false };
     },
@@ -699,6 +697,7 @@ export function createPandaCabin() {
     state() {
       return {
         lampOn,
+        readingLight: readingLight.state(),
         cassetteFlipped: false,
         cassetteRotation: furniture.cassette.rotation.y,
         cassetteControlled,
@@ -710,6 +709,7 @@ export function createPandaCabin() {
       };
     },
     dispose() {
+      readingLight.dispose();
       furniture.dispose?.();
       for (const g of geometries) g.dispose();
       diagnosticMaterial.dispose();

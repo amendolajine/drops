@@ -1,15 +1,14 @@
 import * as T from 'three';
+import { createBariWorld } from './bari-world.js';
 import { createCabin } from './cabin.js';
 import { createCaptureClock } from './capture-clock.js';
 import { createContinuityController } from './continuity-controller.js';
-import { readRightGlass } from './glass.js';
 import { JOURNEY_SAVE_SCHEMA, sceneContract, validateJourneyCheckpoint } from './journey-state.js';
-import { createLandscape } from './landscape.js';
 import { localisePage, setLanguage, text } from './language.js';
 import { applyPandaArt } from './panda-art.js';
 import { createPresentation, GRID } from './presentation.js';
-import { createWaterSession } from './water-session.js';
-import { createWaterView } from './water-view.js';
+import { createRainField, createRainSessions } from './rain-field.js';
+import { routeMotion } from './route-motion.js';
 import { createWeather } from './weather.js';
 
 const $ = (id) => document.getElementById(id),
@@ -27,6 +26,7 @@ function message(key) {
   $('message').textContent = text(key);
 }
 function touch() {
+  renderNeeded = true;
   continuity?.markDirty();
 }
 let renderer,
@@ -41,6 +41,7 @@ let renderer,
   water,
   pane,
   waterView,
+  rain,
   background,
   weather,
   time = 0,
@@ -50,6 +51,7 @@ let renderer,
   steps = 0,
   sceneFault = null,
   running = false,
+  renderNeeded = true,
   yaw = 1.18,
   pitch = 0.04,
   aimYaw = yaw,
@@ -68,6 +70,7 @@ let renderer,
   rendererIdentity = {};
 function resize() {
   if (!renderer) return;
+  renderNeeded = true;
   capture.reset();
   const r = stage.getBoundingClientRect(),
     dpr = devicePixelRatio || 1,
@@ -131,6 +134,7 @@ function setView(name, instant = false) {
   };
 }
 function pause() {
+  renderNeeded = true;
   capture.reset();
   running = false;
   accumulator = 0;
@@ -199,26 +203,36 @@ function moveLook(dt) {
   if (yaw !== beforeYaw || pitch !== beforePitch) touch();
 }
 function forcing() {
-  const speed = 5,
+  const motion = routeMotion(time, world.length),
+    speed = motion.speed,
     current = world.pose(distance),
-    before = world.pose(distance - 0.2),
-    after = world.pose(distance + 0.2),
+    beforeDistance = Math.max(0, distance - 0.2),
+    afterDistance = Math.min(world.length, distance + 0.2),
+    before = world.pose(beforeDistance),
+    after = world.pose(afterDistance),
     heading = Math.atan2(-current.tangent.x, -current.tangent.z);
   const acceleration = after.tangent
     .clone()
     .sub(before.tangent)
-    .multiplyScalar((speed * speed) / 0.4);
+    .multiplyScalar((speed * speed) / (afterDistance - beforeDistance))
+    .addScaledVector(current.tangent, motion.acceleration);
   const effective = new T.Vector3(0, -9.81, 0)
     .sub(acceleration)
     .applyAxisAngle(new T.Vector3(0, 1, 0), -heading);
-  return { speed, gravityU: effective.dot(pane.u), gravityDown: effective.dot(pane.down), rain: 0.65 };
+  return {
+    speed,
+    effective,
+    gravityU: effective.dot(pane.u),
+    gravityDown: effective.dot(pane.down),
+    rain: 0.65,
+  };
 }
 function step() {
   const input = forcing();
-  water.advance(1 / 60, input);
+  rain.advance(1 / 60, input);
   steps++;
   time = steps / 60;
-  distance = (steps * 5) / 60;
+  distance = routeMotion(time, world.length).distance;
   touch();
 }
 function draw(dt = 0) {
@@ -229,7 +243,7 @@ function draw(dt = 0) {
   camera.rotation.order = 'YXZ';
   cabin.update(dt);
   world.update(time);
-  waterView.update(water, steps);
+  rain.update(steps);
   scene.updateMatrixWorld(true);
   renderer.info.reset();
   renderer.shadowMap.needsUpdate = true;
@@ -239,17 +253,18 @@ function draw(dt = 0) {
     for (let i = 0; i < views.length; i++) {
       camera.rotation.set(views[i].pitch, -views[i].yaw, 0);
       camera.updateMatrixWorld(true);
-      waterView.group.visible = false;
+      rain.setVisibility(false);
       renderer.setRenderTarget(background);
       renderer.render(scene, camera);
-      waterView.group.visible = true;
+      rain.setVisibility(true);
       renderer.setRenderTarget(presentation.sampleTarget(i));
       renderer.render(scene, camera);
     }
     presentation.draw({ count: views.length, tape: capture.state().tape, grainSeed: Math.floor(time * 25) });
     frames++;
+    renderNeeded = false;
   } finally {
-    waterView.group.visible = true;
+    rain.setVisibility(true);
     camera.rotation.set(pitch, -yaw, 0);
     camera.updateMatrixWorld(true);
     renderer.setRenderTarget(null);
@@ -269,6 +284,8 @@ function state() {
     weather: weather.state(),
     water: water.diagnostics(),
     waterView: waterView.state(),
+    rain: rain.diagnostics(),
+    rainViews: rain.viewState(),
     glass: pane.diagnostics(),
     forcing: forcing(),
     sceneFault,
@@ -286,6 +303,10 @@ function state() {
     cabin: s,
     route: {
       length: world.length,
+      source: world.source,
+      curve: world.curveInfo,
+      detailScope: world.detailScope,
+      motion: routeMotion(time, world.length),
       section: pose.section,
       position: pose.position.toArray(),
       heading: rig.rotation.y,
@@ -325,7 +346,7 @@ function frame(now) {
     moveLook(dt);
     cabin.update(dt);
     capture.observe(now / 1000, yaw, pitch);
-    if (capture.due(now / 1000)) draw(0);
+    if ((running || renderNeeded) && capture.due(now / 1000)) draw(0);
   } catch (error) {
     pause();
     sceneFault = String(error);
@@ -347,7 +368,7 @@ function checkpoint() {
     weather: weather.state().mode,
     objects: { lampOn: cabin.state().lampOn, diagnostic },
     captureMode: capture.state().mode,
-    water: water.exportCheckpoint(),
+    rain: rain.exportCheckpoint(),
   };
 }
 function applyCheckpoint(value) {
@@ -355,10 +376,11 @@ function applyCheckpoint(value) {
   pause();
   cancelDrag();
   keys.clear();
-  water = value.water;
+  rain.replace(value.rain);
+  water = rain.primaryWater;
   steps = c.steps;
   time = steps / 60;
-  distance = (steps * 5) / 60;
+  distance = routeMotion(time, world.length).distance;
   ({ yaw, pitch, aimYaw, aimPitch } = c.view);
   transition = c.view.transition ? { ...c.view.transition } : null;
   if (cabin.state().lampOn !== c.objects.lampOn) cabin.toggle('lamp');
@@ -372,7 +394,7 @@ function applyCheckpoint(value) {
   accumulator = 0;
   last = performance.now();
   sceneFault = null;
-  waterView.invalidate();
+  rain.invalidate();
   draw(0);
 }
 function startFresh() {
@@ -385,13 +407,9 @@ function startFresh() {
       weather: 'overcast',
       objects: { lampOn: false, diagnostic: false },
       captureMode: 'shutter24',
-      water: createWaterSession({
-        seed: 'trip-2026-11-02',
-        widthMm: pane.widthMm,
-        heightMm: pane.heightMm,
-      }).exportCheckpoint(),
+      rain: createRainSessions(rain.panes.map((record) => record.pane)).exportCheckpoint(),
     };
-  applyCheckpoint(validateJourneyCheckpoint(fresh, contract));
+  applyCheckpoint(validateJourneyCheckpoint(fresh, contract, rain.prepareRestore));
 }
 async function init() {
   try {
@@ -406,7 +424,7 @@ async function init() {
     renderer.toneMapping = T.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.95;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T.BasicShadowMap;
+    renderer.shadowMap.type = T.PCFShadowMap;
     renderer.shadowMap.autoUpdate = false;
     renderer.info.autoReset = false;
     const gl = renderer.getContext(),
@@ -432,7 +450,7 @@ async function init() {
     sun.shadow.bias = -0.0001;
     sun.shadow.normalBias = 0.003;
     scene.add(sun, sun.target);
-    world = createLandscape(scene);
+    world = createBariWorld(scene);
     rig = new T.Group();
     scene.add(rig);
     cabin = createCabin();
@@ -449,18 +467,19 @@ async function init() {
     presentation = createPresentation(renderer);
     for (const target of presentation.targets) target.samples = edgeSamples;
     presentation.setAuthored(false);
-    pane = readRightGlass(cabin.group);
-    [yaw, pitch] = viewAngles('window');
-    aimYaw = yaw;
-    aimPitch = pitch;
-    water = createWaterSession({ seed: 'trip-2026-11-02', widthMm: pane.widthMm, heightMm: pane.heightMm });
     background = new T.WebGLRenderTarget(GRID.width, GRID.height, {
       type: T.HalfFloatType,
       minFilter: T.NearestFilter,
       magFilter: T.NearestFilter,
       samples: edgeSamples,
     });
-    waterView = createWaterView(rig, pane, background.texture);
+    rain = createRainField({ cabin, rig, backgroundTexture: background.texture });
+    pane = rain.primaryPane;
+    water = rain.primaryWater;
+    waterView = rain.panes.find((record) => record.pane === pane).view;
+    [yaw, pitch] = viewAngles('window');
+    aimYaw = yaw;
+    aimPitch = pitch;
     new ResizeObserver(resize).observe(stage);
     window.addEventListener('resize', resize);
     resize();
@@ -575,20 +594,26 @@ async function init() {
         return state();
       },
     };
-    contract = sceneContract(pane, world.length, cabin.eye, water.exportCheckpoint().options);
+    contract = sceneContract(
+      pane,
+      world,
+      cabin.eye,
+      water.exportCheckpoint().options,
+      rain.exportCheckpoint(),
+    );
     continuity = createContinuityController({
       getCheckpoint: checkpoint,
-      prepare: (raw) => validateJourneyCheckpoint(raw, contract),
+      prepare: (raw) => validateJourneyCheckpoint(raw, contract, rain.prepareRestore),
       apply: applyCheckpoint,
       startNew: startFresh,
       pause,
       getElement: $,
       supported: true,
-      dbName: 'drops-journey-v8-1',
+      dbName: 'drops-journey-v9-bari-1',
       autoIntervalMs: 10000,
     });
     await continuity.initialise();
-    window.parent.postMessage({ type: 'drops-journey-status', version: 'v8', ready: true }, location.origin);
+    window.parent.postMessage({ type: 'drops-journey-status', version: 'v9', ready: true }, location.origin);
     requestAnimationFrame(frame);
   } catch (_error) {
     $('loading').hidden = false;

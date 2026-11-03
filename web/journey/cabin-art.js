@@ -87,7 +87,7 @@ export function applyComfortArt(cabin, scene) {
     peripheralTuftsAfter: 0,
   };
   scene.traverse((o) => {
-    if (!o.isMesh || diagnostics.some((d) => d.object === o)) return;
+    if (!o.isMesh || o.userData.authoredWorld || diagnostics.some((d) => d.object === o)) return;
     for (const m of [].concat(o.material || [])) {
       if (m.isMeshToonMaterial) {
         m.gradientMap = calmRamp;

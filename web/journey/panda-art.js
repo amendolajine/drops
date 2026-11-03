@@ -2,6 +2,10 @@ import { applyComfortArt } from './cabin-art.js';
 
 export function applyPandaArt(cabin, scene) {
   const saved = [];
+  scene.traverse((object) => {
+    if (object.isMesh && object.userData.authoredWorld) saved.push({ object, material: object.material });
+  });
+  const worldCount = saved.length;
   cabin.traverse((object) => {
     if (object.isMesh) saved.push({ object, material: object.material });
   });
@@ -11,9 +15,9 @@ export function applyPandaArt(cabin, scene) {
     ...art,
     stats: {
       ...art.stats,
-      cabin:
-        'Original 1988-reference Panda surfaces and small authored maps; world uses the accepted pixel treatment',
-      restoredCabinMeshes: saved.length,
+      cabin: 'Provisional original cabin and Bari surfaces with small authored maps',
+      restoredCabinMeshes: saved.length - worldCount,
+      restoredWorldMeshes: worldCount,
     },
   };
 }

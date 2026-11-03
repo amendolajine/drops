@@ -293,3 +293,31 @@ Format: number, date, decision, why, evidence, who decided.
 - Why: testers holding the existing link should receive the most complete available progress, with
   clear limits, rather than keep testing an earlier game direction.
 - Who: Antonio.
+
+## D031 - 2026-11-03 - Six panes, a mounted lamp and an attributed Bari coastal study
+- What: run six independent water fields on the actual cabin window apertures. Keep the original
+  right rear field and its stream unchanged; gaze and presentation never advance the water.
+  Export and validate all six fields before restore. A partial runtime step fault freezes the
+  field and blocks export until complete recovery rather than saving a misleading common clock.
+- Replace the floating point lamp with a downward warm source mounted to the actual headliner.
+  Use occlusion shadows, local lens emission and restrained overcast fill. This is a visual
+  proposal, not calibrated Fiat lighting or artistic approval. Preserve the provisional car.
+- Use selected modern OpenStreetMap route and coast data for a non-looping Bari drive. Antonio
+  explicitly approved the Open Database License 1.0 exception for these geographic data, with
+  attribution. Offer the complete selected machine-readable data, provenance, notice, licence
+  and transformation source in map-data. Keep code and original surface designs separate.
+- Use one path for road and car pose, and one 60 Hz clock for route position, speed and inertial
+  forces on all panes. Cruise at five metres per second, then stop over the final 25 metres.
+  At arrival the car stays still while water, looking and the light remain available.
+- The scenery around route distances 760-980 metres is an original first proposal. Other
+  buildings are massing; widths, heights and vertical levels are fitting assumptions. No
+  Google geometry, reference photographs, downloaded Panda or historical accuracy is implied.
+- Version the complete scene and use a distinct local-save namespace. Keep study 08, its asset
+  dependencies and original local-save namespace accessible; do not invent six-pane history
+  when opening an old one-pane save. Preserve feedback versions and manual file delivery.
+- Check gesture-free views, six-pane continuity, real storage reopening, responsive layout,
+  release hashes and data notices. Keep sound, people, wipers, car fidelity and home-to-arrival
+  story explicitly outside this review. Those remain part of the full production plan.
+- Why: rain belongs on every window, the lamp needs spatial cause, and the outside world should
+  begin from coherent geography without copying restricted map imagery or overstating finish.
+- Who: Antonio.

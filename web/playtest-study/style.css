@@ -153,6 +153,7 @@ h1 {
 footer a,
 .study-note a {
   min-height: 45px;
+  min-width: 45px;
   display: inline-flex;
   align-items: center;
 }
@@ -198,6 +199,9 @@ footer {
   gap: 12px 24px;
   font-size: 14px;
   color: #bdc8bb;
+}
+.map-credit {
+  flex-basis: 100%;
 }
 @media (min-width: 1120px) {
   .workspace {

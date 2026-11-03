@@ -1,5 +1,11 @@
 drops.
 Current journey study: original cabin, landscape, procedural materials and water presentation.
+Selected Bari route and coastline: © OpenStreetMap contributors, Open Database License 1.0.
+Source and copyright information: https://www.openstreetmap.org/copyright
+Licence: https://opendatacommons.org/licenses/odbl/1-0/
+Free selected geographic data, query, identifiers, complete transformations and local licence: map-data/index.html
+Geographic data and their adaptations remain under ODbL 1.0, separate from original art and code.
+Modern source geography is not a verified 1990s reconstruction. Road widths, heights and building forms are assumptions.
 Game code: MIT.
 Original artwork, name and logo: all rights reserved.
 Archived race assets: WRAD ARMS by wriks, CC0 1.0, see licenses/wrad-arms.txt. Arm mesh, rig and pale skin texture adapted from https://wriks.itch.io/wrad-arms. These arms are not used in the current journey.

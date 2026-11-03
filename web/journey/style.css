@@ -145,6 +145,23 @@ summary {
 details p {
   max-width: 980px;
 }
+.map-credit {
+  grid-column: 1 / -1;
+  margin: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+details a,
+.map-credit a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 45px;
+  max-width: 100%;
+}
 .save-actions {
   display: flex;
   gap: 8px;

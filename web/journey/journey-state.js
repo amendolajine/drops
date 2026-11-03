@@ -1,10 +1,11 @@
 import { CAPTURE_MODES } from './capture-clock.js';
-import { restoreWaterSession, WATER_MODEL } from './water-session.js';
+import { ROUTE_MOTION } from './route-motion.js';
+import { WATER_MODEL } from './water-session.js';
 
-export const JOURNEY_SAVE_SCHEMA = 'drops-journey-state-1';
-export const JOURNEY_SCENE_ID = 'panda29-route1-forcing1-2026-11-03';
+export const JOURNEY_SAVE_SCHEMA = 'drops-journey-state-2';
+export const JOURNEY_SCENE_ID = 'panda29-bari1-sixpanes-light2-2026-11-03';
 const rounded = (n) => Math.round(n * 1e6) / 1e6;
-export function sceneContract(pane, routeLength, eye, waterOptions) {
+export function sceneContract(pane, world, eye, waterOptions, rainCheckpoint) {
   return {
     id: JOURNEY_SCENE_ID,
     waterModel: WATER_MODEL,
@@ -18,9 +19,19 @@ export function sceneContract(pane, routeLength, eye, waterOptions) {
       heightMm: rounded(pane.heightMm),
       corners: pane.corners.map((p) => p.toArray().map(rounded)),
     },
-    route: { id: 'fixed-neighbourhood-canal-fields-1', length: rounded(routeLength), metresPerSecond: 5 },
+    route: {
+      id: world.curveInfo.id,
+      source: world.source.id,
+      length: rounded(world.length),
+      motion: ROUTE_MOTION,
+    },
     eye: eye.toArray().map(rounded),
-    features: ['water', 'gaze', 'lamp', 'fixed-weather'],
+    rainPanes: rainCheckpoint.panes.map((entry) => ({
+      id: entry.id,
+      geometry: entry.geometry,
+      options: entry.water.options,
+    })),
+    features: ['six-pane-water', 'gaze', 'shaded-lamp', 'fixed-weather-depth', 'bari-coast-with-stop'],
   };
 }
 function record(value) {
@@ -41,10 +52,10 @@ function finite(value, min, max, label) {
 function angle(value, pitch, label) {
   finite(value, pitch ? -1.35 : -2.85, pitch ? 0.85 : 2.85, label);
 }
-export function validateJourneyCheckpoint(raw, expected) {
+export function validateJourneyCheckpoint(raw, expected, prepareRain) {
   exactKeys(
     raw,
-    ['schema', 'scene', 'steps', 'view', 'weather', 'objects', 'captureMode', 'water'],
+    ['schema', 'scene', 'steps', 'view', 'weather', 'objects', 'captureMode', 'rain'],
     'journey state',
   );
   if (raw.schema !== JOURNEY_SAVE_SCHEMA) throw Error('Unsupported journey save version');
@@ -79,24 +90,13 @@ export function validateJourneyCheckpoint(raw, expected) {
     Math.abs(raw.view.aimPitch - raw.view.pitch) > 1e-9
   )
     throw Error('Unfinished gaze target has no transition');
-  if (
-    !record(raw.water?.options) ||
-    JSON.stringify({
-      ...raw.water.options,
-      widthMm: rounded(raw.water.options.widthMm),
-      heightMm: rounded(raw.water.options.heightMm),
-    }) !== JSON.stringify(expected.waterOptions)
-  )
-    throw Error('Water configuration differs from this journey');
-  const water = restoreWaterSession(raw.water),
-    d = water.diagnostics();
-  if (d.tick !== raw.steps || Math.abs(d.time - raw.steps / 60) > Math.max(1e-8, d.time * 1e-8))
-    throw Error('Journey and water clocks differ');
-  if (
-    Math.abs(d.widthMm - expected.glass.widthMm) > 1e-6 ||
-    Math.abs(d.heightMm - expected.glass.heightMm) > 1e-6
-  )
-    throw Error('Water pane differs');
-  if (d.fault) throw Error('The saved journey contains an unfinished water step');
-  return { checkpoint: raw, water };
+  if (typeof prepareRain !== 'function') throw Error('A complete rain validator is required');
+  const rain = prepareRain(raw.rain);
+  for (const entry of rain) {
+    const d = entry.water.diagnostics();
+    if (d.tick !== raw.steps || Math.abs(d.time - raw.steps / 60) > Math.max(1e-8, d.time * 1e-8))
+      throw Error('Journey and rain clocks differ');
+    if (d.fault) throw Error('The saved journey contains an unfinished rain step');
+  }
+  return { checkpoint: raw, rain };
 }

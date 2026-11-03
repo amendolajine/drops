@@ -5,6 +5,16 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   base: './',
   server: { port: 5173, strictPort: false },
+  // Discover dependencies only from maintained application entries, not archived studies.
+  optimizeDeps: {
+    entries: [
+      'index.html',
+      'web/playtest-study/index.html',
+      'web/playtest-study/scene.html',
+      'web/feedback-study/owner.html',
+    ],
+    include: ['three'],
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

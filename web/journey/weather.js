@@ -2,14 +2,14 @@ import * as T from 'three';
 
 // A fixed lighting study. This is not a weather simulation or a rain source.
 export const OVERCAST = Object.freeze({
-  sky: '#ccd1cd',
-  ground: '#78837d',
-  hemisphereIntensity: 1.75,
-  sun: '#d4dad6',
-  sunIntensity: 0.16,
-  shadowIntensity: 0.12,
-  haze: '#b8c0b8',
-  hazeDensity: 0.0038,
+  sky: '#b5c5cb',
+  ground: '#665f53',
+  hemisphereIntensity: 1.05,
+  sun: '#e0ded0',
+  sunIntensity: 0.58,
+  shadowIntensity: 0.16,
+  haze: '#a4b1ae',
+  hazeDensity: 0.0026,
 });
 
 const controllers = new WeakMap();

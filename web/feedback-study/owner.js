@@ -122,9 +122,17 @@ function render() {
       detail(dl, 'Lingua', (current ? row.language : row.context.language) || 'Non fornita');
       if (current) detail(dl, 'Data del file', row.timestamp);
       for (const [key, [label, options]] of Object.entries(current ? CURRENT : LEGACY))
-        detail(dl, label, row.answers[key] === null ? 'Non risposto' : options[row.answers[key]]);
+        detail(
+          dl,
+          current && key === 'rain' && row.studyVersion.includes('v9') ? 'Pioggia sui diversi vetri' : label,
+          row.answers[key] === null ? 'Non risposto' : options[row.answers[key]],
+        );
       if (current) {
-        detail(dl, 'Cosa è successo', row.answers.happened);
+        detail(
+          dl,
+          row.studyVersion.includes('v9') ? 'Luce, cielo o lungomare' : 'Cosa è successo',
+          row.answers.happened,
+        );
         detail(dl, 'Cosa cambierebbe', row.answers.change);
       } else {
         detail(dl, 'Difficoltà', row.issues.map((key) => ISSUES[key]).join(', '));

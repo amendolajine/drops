@@ -3,7 +3,7 @@ import './feedback.css';
 
 const COPY = {
   it: {
-    edition: 'Prova del viaggio 08',
+    edition: 'Prova del viaggio 09',
     language: 'Lingua',
     title: 'Un viaggio sotto la pioggia.',
     premise:
@@ -11,16 +11,17 @@ const COPY = {
     instructions:
       'Trascina la vista o usa le frecce per guardarti intorno. Puoi cambiare luce e cielo, fermarti e riprendere il viaggio.',
     scope:
-      'Prova in corso: guarda sguardo, pioggia e ripresa del viaggio. Auto provvisoria; suono, persone e storia sono ancora da aggiungere.',
+      'Da osservare: pioggia sui vetri, luce interna e un primo lungomare di Bari. Gli edifici sono abbozzati; auto, suono, persone e storia restano da completare.',
     begin: 'Entra',
     feedback: 'Il tuo riscontro',
     loading: 'Preparazione del viaggio…',
     local: 'Nessun account. Scarica il riscontro e manda il file ad Antonio.',
     credits: 'Crediti',
+    mapData: 'Dati e modifiche',
     sceneTitle: 'Viaggio dal sedile posteriore',
   },
   en: {
-    edition: 'Journey study 08',
+    edition: 'Journey study 09',
     language: 'Language',
     title: 'A ride in the rain.',
     premise:
@@ -28,12 +29,13 @@ const COPY = {
     instructions:
       'Drag the view or use the arrow keys to look around. Change the light or sky, pause, and return to a saved journey.',
     scope:
-      'Work in progress: try looking around, watching the rain and resuming a journey. The car is provisional; sound, people and story are still to come.',
+      'Try the rain on different windows, the cabin light and an early Bari seafront. Buildings are sketches; the car, sound, people and story remain unfinished.',
     begin: 'Enter',
     feedback: 'Your feedback',
     loading: 'Preparing the journey…',
     local: 'No accounts. Download your feedback and send the file to Antonio.',
     credits: 'Credits',
+    mapData: 'Data and changes',
     sceneTitle: 'Backseat journey',
   },
 };
@@ -71,7 +73,7 @@ element('begin').addEventListener('click', () => {
   element('app').hidden = false;
   element('feedback-panel').open = window.matchMedia('(min-width: 1120px)').matches;
   feedback = mountFeedback(element('feedback-fields'), { language, sessionId: crypto.randomUUID() });
-  frame.src = `./scene.html?lang=${language}&v=journey-v8`;
+  frame.src = `./scene.html?lang=${language}&v=journey-v9`;
 });
 element('feedback-link').addEventListener('click', () => {
   element('feedback-panel').open = true;

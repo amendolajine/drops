@@ -1,0 +1,32 @@
+Bari coastal study - OpenStreetMap geographic data
+
+Contains information from OpenStreetMap, which is made available here under
+the Open Database License (ODbL).
+
+Attribution: © OpenStreetMap contributors
+Source and copyright information: https://www.openstreetmap.org/copyright
+ODbL 1.0: https://opendatacommons.org/licenses/odbl/1-0/
+Local copy of the full licence text: ODbL-1.0.txt
+
+Dataset: bari-coastal-osm-2026-11-03-01
+Acquired: 2026-11-03
+OSM database timestamp: 2026-11-03T13:43:06Z
+Source endpoint: https://overpass-api.de/api/interpreter
+
+The accompanying bari-coast.geojson contains the selected source route and
+coastline coordinates, OSM way and node identifiers, acquisition details and
+the source query. bari-data.js carries the same selected coordinate values
+for the renderer. These geographic data and their adaptations remain under
+ODbL 1.0. Rendering code and original surface designs are separate works.
+
+The route uses ways 68558009, 1226173975 and 30009729. The clipped coastline
+uses ways 316357763 and 442458193. A local projection converts longitude and
+latitude to metres. A centripetal curve derived from the route is used for
+both the road and vehicle pose. Its source deviation limit and measured
+control-hull bound are exposed by the world module.
+
+Modern geographic data do not establish 1990s traffic restrictions, street
+furniture, building appearance or coastal works. Road width, vertical levels,
+land closure and original building forms are fitting assumptions. The detailed
+section around 760-980 metres is an unapproved visual proposal. Other buildings
+remain massing. No Google geometry, photographs or remote textures are included.
